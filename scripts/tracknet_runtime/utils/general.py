@@ -270,7 +270,8 @@ def write_pred_video(video_file, pred_dict, save_file, traj_len=8, label_df=None
     cap = cv2.VideoCapture(video_file)
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     w, h = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-    fourcc = int(cap.get(cv2.CAP_PROP_FOURCC))
+    # Use mp4v for cross-platform writes; input h264 fourcc often fails on Linux OpenCV builds.
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 
     # Read ground truth label if exists
     if label_df is not None:
@@ -281,6 +282,8 @@ def write_pred_video(video_file, pred_dict, save_file, traj_len=8, label_df=None
 
     # Video config
     out = cv2.VideoWriter(save_file, fourcc, fps, (w, h))
+    if not out.isOpened():
+        raise RuntimeError(f"Failed to open VideoWriter for {save_file}")
     
     # Create a queue for storing trajectory
     pred_queue = deque()
@@ -304,7 +307,7 @@ def write_pred_video(video_file, pred_dict, save_file, traj_len=8, label_df=None
         # Push ball coordinates for each frame
         if label_df is not None:
             gt_queue.appendleft([x[i], y[i]]) if vis[i] and i < len(label_df) else gt_queue.appendleft(None)
-        pred_queue.appendleft([x_pred[i], y_pred[i]]) if vis_pred[i] else pred_queue.appendleft(None)
+        pred_queue.appendleft([x_pred[i], y_pred[i]]) if i < len(vis_pred) and vis_pred[i] else pred_queue.appendleft(None)
 
         # Draw ground truth trajectory if exists
         if label_df is not None:

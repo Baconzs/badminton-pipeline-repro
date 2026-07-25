@@ -3,10 +3,13 @@ set -euo pipefail
 
 INPUT_VIDEO=""
 WORK_ROOT="${HOME}/yumaoqiu_repro"
-COURT_POINTS="352,232,613,232,719,525,244,525"
+# COURT_POINTS="352,232,613,232,719,525,244,525"
+COURT_POINTS="642,486,1275,484,1578,1003,350,1009"
 MANUAL_COURT=0
 PYTHON_BIN="python3"
 YOLO_DEVICE=""
+TRACKNET_BATCH_SIZE=4
+TRACKNET_MAX_SAMPLE_NUM=300
 
 usage() {
   cat <<'EOF'
@@ -22,6 +25,8 @@ Options:
   --manual-court                Enable manual court clicking (TL->TR->BR->BL)
   --python PATH                 Python executable (default: python3)
   --yolo-device STR             YOLO device for overlay stage, e.g. mps/cpu (default: auto)
+  --tracknet-batch-size N       TrackNet inference batch size (default: 4, lower if OOM)
+  --tracknet-max-sample-num N   Max frames sampled for median image (default: 300, lower if OOM)
   -h, --help                    Show help
 EOF
 }
@@ -40,6 +45,10 @@ while [[ $# -gt 0 ]]; do
       PYTHON_BIN="${2:-}"; shift 2 ;;
     --yolo-device)
       YOLO_DEVICE="${2:-}"; shift 2 ;;
+    --tracknet-batch-size)
+      TRACKNET_BATCH_SIZE="${2:-}"; shift 2 ;;
+    --tracknet-max-sample-num)
+      TRACKNET_MAX_SAMPLE_NUM="${2:-}"; shift 2 ;;
     -h|--help)
       usage; exit 0 ;;
     *)
@@ -87,6 +96,21 @@ TRACKNET_CSV="${TRACKNET_OUT_DIR}/${VIDEO_STEM}_ball.csv"
 OVERLAY_OUT="${WORK_ROOT}/end1_fix_swap2_precision_full_regen.mp4"
 FX_OUT="${WORK_ROOT}/end1_fix_swap2_precision_full_fx_regen.mp4"
 
+transcode_to_h264() {
+  local src="$1"
+  local dst="${src%.mp4}_h264.mp4"
+  if ! command -v ffmpeg >/dev/null 2>&1; then
+    echo "[WARN] ffmpeg not found; keeping mp4v source: ${src}" >&2
+    return 0
+  fi
+  echo "[POST] Transcode ${src} -> H.264..."
+  ffmpeg -y -hide_banner -loglevel error \
+    -i "${src}" \
+    -c:v libx264 -preset medium -crf 20 -pix_fmt yuv420p -movflags +faststart \
+    "${dst}"
+  echo "[OK] ${dst}"
+}
+
 echo "[STEP 1/3] TrackNet inference..."
 "${PYTHON_BIN}" "${TRACKNET_SCRIPT}" \
   --video_file "${INPUT_VIDEO}" \
@@ -94,7 +118,9 @@ echo "[STEP 1/3] TrackNet inference..."
   --save_dir "${TRACKNET_OUT_DIR}" \
   --output_video \
   --device auto \
-  --large_video
+  --large_video \
+  --batch_size "${TRACKNET_BATCH_SIZE}" \
+  --max_sample_num "${TRACKNET_MAX_SAMPLE_NUM}"
 
 if [[ ! -f "${TRACKNET_VIDEO_RAW}" ]]; then
   echo "[ERROR] Missing TrackNet output video: ${TRACKNET_VIDEO_RAW}" >&2
@@ -107,6 +133,7 @@ fi
 cp -f "${TRACKNET_VIDEO_RAW}" "${TRACKNET_VIDEO_CANONICAL}"
 echo "[OK] ${TRACKNET_VIDEO_CANONICAL}"
 echo "[OK] ${TRACKNET_CSV}"
+transcode_to_h264 "${TRACKNET_VIDEO_CANONICAL}"
 
 echo "[STEP 2/3] Overlay rendering..."
 overlay_args=(
@@ -136,6 +163,7 @@ if [[ ! -f "${OVERLAY_OUT}" ]]; then
   exit 1
 fi
 echo "[OK] ${OVERLAY_OUT}"
+transcode_to_h264 "${OVERLAY_OUT}"
 
 echo "[STEP 3/3] Bullet-time FX..."
 "${PYTHON_BIN}" "${FX_SCRIPT}" \
@@ -147,6 +175,13 @@ if [[ ! -f "${FX_OUT}" ]]; then
   exit 1
 fi
 
+FX_H264_OUT="${FX_OUT%.mp4}_h264.mp4"
+transcode_to_h264 "${FX_OUT}"
+
+TRACKNET_H264_OUT="${TRACKNET_VIDEO_CANONICAL%.mp4}_h264.mp4"
+OVERLAY_H264_OUT="${OVERLAY_OUT%.mp4}_h264.mp4"
 echo "[DONE] Repro pipeline finished."
 ls -lh "${TRACKNET_VIDEO_CANONICAL}" "${TRACKNET_CSV}" "${OVERLAY_OUT}" "${FX_OUT}"
-
+for f in "${TRACKNET_H264_OUT}" "${OVERLAY_H264_OUT}" "${FX_H264_OUT}"; do
+  [[ -f "${f}" ]] && ls -lh "${f}"
+done
