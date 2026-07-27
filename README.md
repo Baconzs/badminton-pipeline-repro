@@ -77,7 +77,8 @@ git clone https://github.com/ychenfen/badminton-pipeline-repro.git
 cd badminton-pipeline-repro
 ```
 
-模型权重 `weights/TrackNet_best.pt`（130 MB）和样本视频通过 Git LFS 自动下载。
+模型权重优先使用 `weights/TrackNet_official_best.pt`（官方 TrackNetV3，130 MB）；
+旧的 `weights/TrackNet_best.pt` 保留作兼容回退。大文件通过 Git LFS 下载。
 
 ### 2. 装依赖
 
@@ -112,20 +113,34 @@ python3 scripts/tools/select_court.py short.mp4
 ### 4. 一键跑通三段
 
 ```bash
-TRACKNET_VIS_THRESH=0.15 ./run_all_mac.sh \
+./run_all_mac.sh \
   --input-video short.mp4 \
   --court-points "352,342,628,343,944,527,52,532" \
   --yolo-device mps
 ```
 
+对于这段 1080p 羽毛球转播，脚本默认使用标准 TrackNet 解码和两个互补的非重叠时序相位。这样比在检测到 CUDA 后自动切换到高清分块更可靠：高清分块在高吊球时容易将球员、横幅或观众误认为羽球。`--tracknet-high-res` 仍可用于显式 A/B 测试，`--tracknet-tile-overlap 0.25` 用于调节其实验性分块重叠比例。
+
+默认的 `nonoverlap` 模式会再跑一个错开半个序列长度的 TrackNet 相位（官方权重为 `offset=4`），输出到 `tracknet_official_result_phase_half/`。Overlay 以两相位的逐帧一致性、连续冲突片段和稀疏姿态框做候选级融合；短的人体/背景分支会在 Kalman 前被屏蔽，音频只验证已有视觉转折。可用 `--no-tracknet-dual-phase` 关闭第二相位。双相位不能恢复真正飞出画面上沿的球，这类帧会保持 `missing`，避免把背景或人体轨迹伪装成检测。
+
+Overlay 阶段会在干净的输入画面上依次执行短缺口插值、常速度 Kalman 平滑、球场几何/静态背景过滤和镜头切换重置，并输出击球候选、自动回合编号、主画面发光拖尾和 Mini Court 拖尾。当几何过滤后的 TrackNet 真实覆盖率低于 35% 时，流程会评估 CPU 三帧运动差分检测；只有它至少形成 2 条严格轨迹、30 个观测并且实测点多于 TrackNet 时才会替换 TrackNet。经典检测先保留 120px 保守区域作为精度基线，再用 480px 顶部扩展执行高吊球专用的二次扫描；只有到达高空且满足更严格外观、加速度和弹道门槛的轨迹才会补入。轨迹断线只会切断可视拖尾，Kalman 仅在镜头切换时硬重置，因此短断检仍可插值，而不会把一次飞行误当成多个回合。可用 `--classical-trigger-coverage` 调整评估阈值，或用 `--no-classical-ball-fallback` 关闭经典检测。
+
+渲染视频旁会生成 `<视频名>_ball_tracking.csv`，其中保留每帧的原始来源和置信度、`Source`（`model`/`classical`/`interp`/`kalman`/`missing`）、经典轨迹 ID、检测模式、击球坐标、球在击球帧是否实测、击球来源和自动回合编号。击球检测会先用双向二次曲线拼接同一飞行，再以分段二次拟合排除普通抛物线顶点；宽带音频只佐证已有的轨迹转折或端点，不再独立制造击球点。稀疏人体姿态仅用于标注击球方和人体框硬否决，姿态腕点不会成为球坐标；落入人体框、缺少邻近实测球轨迹或与轨迹位置不一致的事件会直接删除。自动回合以镜头切换为硬边界，默认允许最长 5 秒的球断检，因此高吊球/遮挡不会把同一回合拆开。
+
 参数含义：
-- `TRACKNET_VIS_THRESH=0.15` — TrackNet 二值化阈值，**必须设**（默认 0.5 会让球检测率降到 0%，详见下文 §6）
+- `TRACKNET_VIS_THRESH=0.20` — TrackNet 二值化阈值；0.20 是官方权重在这段转播上的稳妥默认值。降低到 0.15 只建议做 A/B 实验，因为弱响应更容易跳到人体或背景（详见下文 §6）
 - `--yolo-device mps` — YOLOv8 走 M 系列芯片 GPU 加速
+- `--classical-trigger-coverage 0.35` — TrackNet 真实覆盖率低于此值时评估经典检测
+- `--no-classical-ball-fallback` — 禁用低覆盖率自动经典视觉回退（默认启用）
 
 跑完输出在 `~/yumaoqiu_repro/`：
-- `tracknet_v3_result_regen/short_ball.csv` — 球的逐帧坐标
-- `end1_fix_swap2_precision_full_regen.mp4` — 叠加分析的视频
-- `end1_fix_swap2_precision_full_fx_regen.mp4` — 加了子弹时间特效的最终成品
+- `tracknet_official_result/short_ball.csv` — 球的逐帧坐标
+- `tracknet_official_result_phase_half/short_ball.csv` — 错开时序窗口的第二相位坐标
+- `end1_ball_tracking_official_fused.mp4` — 叠加分析的视频
+- `end1_ball_tracking_official_fused_ball_tracking.csv` — 可审计的轨迹、击球和回合 sidecar
+- `end1_ball_tracking_official_fused_fx.mp4` — 加了子弹时间特效的最终成品
+
+播放器兼容性优先使用同目录的 `_h264.mp4` 文件（例如 `end1_ball_tracking_official_fused_h264.mp4`）。
 
 ### 5. 看 demo
 
@@ -143,7 +158,7 @@ open demo/short_overlay_demo.mp4
 
 **它解决的问题**：羽毛球只有几个像素、飞得快、容易模糊，单帧 YOLO 之类的检测器经常漏。
 
-**它的思路**：一次吃 4 帧连拍，输出 4 张概率热力图（每个像素值 = 这里是球的概率）。利用连续帧的运动信息识别出模糊的球。类比：你看一张静态照片可能看不出蚊子在哪，但 4 张连拍就能看出"有什么东西在那一带飞过"。
+**它的思路**：官方权重一次处理 8 帧连拍，输出 8 张概率热力图（每个像素值 = 这里是球的概率）。利用连续帧的运动信息识别出模糊的球。类比：你看一张静态照片可能看不出蚊子在哪，但连续帧能看出“有什么东西在那一带飞过”。
 
 **输出**：
 
@@ -165,11 +180,11 @@ Frame,Visibility,X,Y
 
 | 参数 | 含义 | 推荐 |
 |---|---|---|
-| `--tracknet_file` | 模型权重 | `weights/TrackNet_best.pt` |
+| `--tracknet_file` | 模型权重 | `weights/TrackNet_official_best.pt` |
 | `--device` | 推理设备 | `auto`（Mac CPU；NVIDIA cuda） |
 | `--large_video` | 流式 dataloader | 长视频必须加 |
 | `--eval_mode` | `nonoverlap` / `weight` | `nonoverlap` 快 8 倍 |
-| `TRACKNET_VIS_THRESH`（环境变量） | 二值化阈值 | **0.15-0.20** |
+| `TRACKNET_VIS_THRESH`（环境变量） | 二值化阈值 | **0.20**（0.15 仅 A/B） |
 
 ### Step 2 — Overlay（球员检测 + 数据叠加）
 
@@ -240,7 +255,7 @@ H, _ = cv2.findHomography(court_quad, dst_rectangle)
 ## 常见问题
 
 **Q：球完全检测不到（Visibility 全 0）**
-A：检查 `TRACKNET_VIS_THRESH` 环境变量是否设了 0.15。原代码硬编码 0.5 在大多数视频上不工作。详见 [HANDOVER.md](HANDOVER.md) §6.1.4。
+A：先使用脚本默认的 `TRACKNET_VIS_THRESH=0.20`，确认权重和输入视频正确；仍然全 0 时再显式 A/B 测试 0.15。详见 [HANDOVER.md](HANDOVER.md) §6.1.4。
 
 **Q：球员速度显示 24 m/s（比博尔特还快）**
 A：跳变阈值过松导致 ID 串变被记进 max_speed。已修复为 `8.0 × dt + 0.05` 自适应阈值。详见 [HANDOVER.md](HANDOVER.md) §6.2.7。
@@ -273,7 +288,8 @@ badminton-pipeline-repro/
 ├── b13b2c0b...mp4                  # 全长 10 分 35 秒比赛视频（LFS）
 │
 ├── weights/                        # 模型权重（LFS）
-│   ├── TrackNet_best.pt            # 球检测（130 MB）
+│   ├── TrackNet_official_best.pt   # 官方 TrackNetV3（8 帧/30 epochs，默认）
+│   ├── TrackNet_best.pt            # 旧权重（4 帧/3 epochs，回退）
 │   └── yolov8s-pose.pt             # 球员姿态（23 MB）
 │
 ├── demo/

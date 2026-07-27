@@ -63,7 +63,10 @@ git clone https://github.com/ychenfen/badminton-pipeline-repro.git
 cd badminton-pipeline-repro
 ```
 
-Model weights (`weights/TrackNet_best.pt` 130 MB) and sample videos are pulled via Git LFS.
+The runner prefers the official TrackNetV3 checkpoint
+(`weights/TrackNet_official_best.pt`, 130 MB). The legacy
+`TrackNet_best.pt` is retained as a compatibility fallback. Large files are
+pulled via Git LFS.
 
 ### 2. Install dependencies
 
@@ -94,20 +97,72 @@ For the included `short.mp4`:
 ### 4. Run all three stages
 
 ```bash
-TRACKNET_VIS_THRESH=0.15 ./run_all_mac.sh \
+./run_all_mac.sh \
   --input-video short.mp4 \
   --court-points "352,342,628,343,944,527,52,532" \
   --yolo-device mps
 ```
 
-Why `TRACKNET_VIS_THRESH=0.15`? The original code hardcodes a `> 0.5` threshold for ball detection that **gives 0% recall on most real videos**. Lowering to 0.15 gives ~95% recall. Full story in [HANDOVER.md §6.1.4](HANDOVER.md).
+For this 1080p badminton broadcast, the runner uses standard TrackNet decoding
+and two complementary non-overlap temporal phases by default. This is more
+reliable than automatically switching to tiled inference on CUDA: the tiled
+path can mistake players, the banner, or spectators for the shuttle during a
+high clear. Pass `--tracknet-high-res` only to benchmark that experimental path;
+`--tracknet-tile-overlap 0.25` controls its overlap.
+
+In default `nonoverlap` mode the runner also executes a second TrackNet pass shifted
+by half a sequence (offset 4 for the official 8-frame checkpoint), writing
+`tracknet_official_result_phase_half/`. The overlay fuses the two phases per
+frame, checks continuous conflict segments, and runs sparse pose/body rejection
+before Kalman smoothing. Short human/background branches are suppressed while
+audio remains corroborating evidence only. Use `--no-tracknet-dual-phase` to
+disable this pass. It cannot recover frames where the shuttle genuinely leaves
+the top of the image; those frames remain `missing` instead of being filled by a
+background or player response.
+
+The overlay uses the clean input frames, then applies short-gap interpolation,
+a constant-velocity Kalman filter, court/static-background gating, and
+camera-cut resets. It renders a bright shuttle trail, hit candidates, rally
+IDs, and a Mini Court trail. If geometry-filtered real TrackNet coverage is
+below 35%, the runner evaluates a CPU three-frame motion detector. It replaces
+TrackNet only when it produces at least two strict tracks, 30 observations, and
+more measured points than TrackNet. A conservative
+120 px pass remains the precision anchor; a second 480 px, tightly gated pass
+recovers high clears near the top of the image. Tracklet boundaries break only
+the visible trail, while Kalman state hard-resets at camera cuts, so short
+detector holes can still be interpolated without splitting one rally.
+`--classical-trigger-coverage` adjusts this evaluation threshold;
+`--no-classical-ball-fallback` disables the fallback.
+
+A `*_ball_tracking.csv` sidecar records raw provenance/confidence, the active
+detector, classical track IDs, smoothed provenance
+(`model`/`classical`/`interp`/`kalman`/`missing`), hit coordinates, whether the
+ball was observed on the hit frame, hit source, and rally ID. Bidirectional
+quadratic stitching and piecewise fits reject ordinary ballistic apexes;
+low-altitude endpoints provide visual candidates, while broadband audio may
+only corroborate an existing trajectory turn/endpoint and cannot create a hit
+by itself. Sparse pose inference labels the hitter and supplies a hard player-
+body veto; wrist/body coordinates never become shuttle coordinates. Events
+inside a player box, without nearby real shuttle measurements, or inconsistent
+with the measured trajectory are removed before NMS. Camera cuts are
+hard rally boundaries; the automatic fallback tolerates up to five seconds of
+missing ball observations so a high clear does not split one rally.
+
+`TRACKNET_VIS_THRESH=0.20` is the safe default for the official checkpoint on
+this broadcast. Treat 0.15 as an A/B experiment only: weaker responses are much
+more likely to jump onto a player or background.
 
 ### 5. Outputs
 
 In `~/yumaoqiu_repro/`:
-- `tracknet_v3_result_regen/short_ball.csv` — per-frame ball coordinates
-- `end1_fix_swap2_precision_full_regen.mp4` — analytics overlay video
-- `end1_fix_swap2_precision_full_fx_regen.mp4` — final FX video
+- `tracknet_official_result/short_ball.csv` — per-frame ball coordinates
+- `tracknet_official_result_phase_half/short_ball.csv` — offset temporal-phase coordinates
+- `end1_ball_tracking_official_fused.mp4` — analytics overlay video
+- `end1_ball_tracking_official_fused_ball_tracking.csv` — auditable track/hit/rally sidecar
+- `end1_ball_tracking_official_fused_fx.mp4` — final FX video
+
+For broad player compatibility, open the sibling `_h264.mp4` files produced by
+the runner (for example `end1_ball_tracking_official_fused_h264.mp4`).
 
 A pre-rendered demo lives at `demo/short_overlay_demo.mp4`.
 
@@ -119,7 +174,9 @@ A pre-rendered demo lives at `demo/short_overlay_demo.mp4`.
 
 **The problem**: shuttlecocks are tiny (5-10 px), fast, and motion-blurred. Single-frame detectors (YOLO, etc.) miss them constantly.
 
-**The trick**: TrackNet ingests 4 consecutive frames and outputs 4 probability heatmaps. Cross-frame motion makes the blurred shuttle visible to the network. Think: you can't tell where a mosquito is in one photo, but in 4 burst shots you can clearly see something flew past.
+**The trick**: the official checkpoint ingests 8 consecutive frames and
+outputs 8 probability heatmaps. Cross-frame motion makes the blurred shuttle
+visible to the network.
 
 ![tracknet output](docs/images/03_tracknet_output.jpg)
 
@@ -188,7 +245,10 @@ TrackNet is the bottleneck. Adding MPS device support is task **P1.1** in the ro
 ## FAQ
 
 **Q: Ball completely undetected (Visibility all 0).**
-A: Did you set `TRACKNET_VIS_THRESH=0.15`? Default 0.5 fails on most videos. See [HANDOVER §6.1.4](HANDOVER.md).
+A: Start with the runner's default `TRACKNET_VIS_THRESH=0.20`. If the official
+checkpoint is still all-zero, verify that the intended weight and video are
+being used before trying a documented A/B run at 0.15. See
+[HANDOVER §6.1.4](HANDOVER.md).
 
 **Q: Player speed reads 24 m/s (faster than Bolt).**
 A: ID-switch jumps were being recorded as max speed. Already fixed with adaptive threshold `8.0 × dt + 0.05`. See [HANDOVER §6.2.7](HANDOVER.md).
@@ -239,7 +299,8 @@ badminton-pipeline-repro/
 ├── short.mp4             # 30s sample (LFS)
 ├── b13b2c0b...mp4        # 10:35 full match (LFS)
 ├── weights/              # model weights (LFS)
-│   ├── TrackNet_best.pt
+│   ├── TrackNet_official_best.pt  # official 8-frame/30-epoch checkpoint (default)
+│   ├── TrackNet_best.pt           # legacy 4-frame/3-epoch fallback
 │   └── yolov8s-pose.pt
 ├── demo/
 │   └── short_overlay_demo.mp4

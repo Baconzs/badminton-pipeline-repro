@@ -33,3 +33,6 @@ panel_preview.png
 
 # Logs
 *.log
+*.mp4
+
+demo/
