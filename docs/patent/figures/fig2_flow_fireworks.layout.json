@@ -1,0 +1,359 @@
+{
+  "canvas": {
+    "height": 1120.0,
+    "width": 960.0
+  },
+  "composition": {
+    "limits": {
+      "max_bends_per_edge": 2,
+      "max_bridged_crossings": 0,
+      "max_route_stretch": 1.35,
+      "max_total_bends": 8,
+      "min_container_gutter": 20.0,
+      "min_label_clearance": 4.0,
+      "min_node_gap": 40.0,
+      "min_segment_length": 16.0,
+      "profile": "showcase"
+    },
+    "metrics": {
+      "bridged_crossings": 0,
+      "max_route_stretch": 1.0,
+      "minimum_container_gutter": 25.0,
+      "minimum_node_gap": 42.0,
+      "shortest_segment": 46.0,
+      "total_bends": 4
+    },
+    "ok": true,
+    "profile": "showcase",
+    "score": 100,
+    "violations": []
+  },
+  "edges": [
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "a-input-detect",
+      "length": 46.0,
+      "route": [
+        [
+          480.0,
+          162.0
+        ],
+        [
+          480.0,
+          208.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "input",
+      "source_port": [
+        480.0,
+        162.0
+      ],
+      "target": "detect",
+      "target_port": [
+        480.0,
+        208.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "a-detect-fuse",
+      "length": 46.0,
+      "route": [
+        [
+          480.0,
+          284.0
+        ],
+        [
+          480.0,
+          330.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "detect",
+      "source_port": [
+        480.0,
+        284.0
+      ],
+      "target": "fuse",
+      "target_port": [
+        480.0,
+        330.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "a-fuse-event",
+      "length": 46.0,
+      "route": [
+        [
+          480.0,
+          406.0
+        ],
+        [
+          480.0,
+          452.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "fuse",
+      "source_port": [
+        480.0,
+        406.0
+      ],
+      "target": "event",
+      "target_port": [
+        480.0,
+        452.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "a-event-gate",
+      "length": 62.0,
+      "route": [
+        [
+          480.0,
+          528.0
+        ],
+        [
+          480.0,
+          590.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "event",
+      "source_port": [
+        480.0,
+        528.0
+      ],
+      "target": "landing_gate",
+      "target_port": [
+        480.0,
+        590.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 1,
+      "bridges": [],
+      "crossings": [],
+      "id": "a-gate-visible",
+      "length": 173.0,
+      "route": [
+        [
+          340.0,
+          672.0
+        ],
+        [
+          225.0,
+          672.0
+        ],
+        [
+          225.0,
+          730.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "landing_gate",
+      "source_port": [
+        340.0,
+        672.0
+      ],
+      "target": "visible",
+      "target_port": [
+        225.0,
+        730.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 1,
+      "bridges": [],
+      "crossings": [],
+      "id": "a-gate-occlusion",
+      "length": 173.0,
+      "route": [
+        [
+          620.0,
+          672.0
+        ],
+        [
+          735.0,
+          672.0
+        ],
+        [
+          735.0,
+          730.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "landing_gate",
+      "source_port": [
+        620.0,
+        672.0
+      ],
+      "target": "occlusion",
+      "target_port": [
+        735.0,
+        730.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 1,
+      "bridges": [],
+      "crossings": [],
+      "id": "a-visible-project",
+      "length": 140.0,
+      "route": [
+        [
+          360.0,
+          808.0
+        ],
+        [
+          300.0,
+          808.0
+        ],
+        [
+          300.0,
+          888.0
+        ],
+        [
+          300.0,
+          888.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "visible",
+      "source_port": [
+        360.0,
+        808.0
+      ],
+      "target": "project",
+      "target_port": [
+        300.0,
+        888.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 1,
+      "bridges": [],
+      "crossings": [],
+      "id": "a-occlusion-project",
+      "length": 140.0,
+      "route": [
+        [
+          600.0,
+          808.0
+        ],
+        [
+          660.0,
+          808.0
+        ],
+        [
+          660.0,
+          888.0
+        ],
+        [
+          660.0,
+          888.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "occlusion",
+      "source_port": [
+        600.0,
+        808.0
+      ],
+      "target": "project",
+      "target_port": [
+        660.0,
+        888.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "a-project-output",
+      "length": 66.0,
+      "route": [
+        [
+          480.0,
+          926.0
+        ],
+        [
+          480.0,
+          992.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "project",
+      "source_port": [
+        480.0,
+        926.0
+      ],
+      "target": "output",
+      "target_port": [
+        480.0,
+        992.0
+      ],
+      "waypoints": []
+    }
+  ],
+  "input_schema": "v1",
+  "issues": [],
+  "mode": "flowchart",
+  "ok": true,
+  "placements": {
+    "legend": {
+      "actual": [
+        42.0,
+        954.0
+      ],
+      "bounds": [
+        32.0,
+        940.0,
+        413.2,
+        986.0
+      ],
+      "moved": true,
+      "requested": [
+        42.0,
+        1038.0
+      ]
+    }
+  },
+  "schema_version": 1,
+  "semantics": {
+    "details": {},
+    "ok": true,
+    "profile": "generic",
+    "style": 1,
+    "visual_theme": "Flat Icon"
+  },
+  "style": {
+    "id": 1,
+    "name": "Flat Icon"
+  },
+  "summary": {
+    "bridged_crossings": 0,
+    "edges": 9,
+    "nodes": 9
+  },
+  "text_metrics": "heuristic-v1"
+}

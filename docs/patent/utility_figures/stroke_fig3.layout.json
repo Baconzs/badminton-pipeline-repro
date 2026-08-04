@@ -1,0 +1,343 @@
+{
+  "canvas": {
+    "height": 1180.0,
+    "width": 1000.0
+  },
+  "composition": {
+    "limits": {
+      "max_bends_per_edge": 12,
+      "max_bridged_crossings": 8,
+      "max_route_stretch": 5.0,
+      "max_total_bends": 100,
+      "min_container_gutter": 0.0,
+      "min_label_clearance": 2.0,
+      "min_node_gap": 0.0,
+      "min_segment_length": 0.0,
+      "profile": "standard"
+    },
+    "metrics": {
+      "bridged_crossings": 0,
+      "max_route_stretch": 1.0,
+      "minimum_container_gutter": null,
+      "minimum_node_gap": 55.0,
+      "shortest_segment": 55.0,
+      "total_bends": 2
+    },
+    "ok": true,
+    "profile": "standard",
+    "score": 100,
+    "violations": []
+  },
+  "edges": [
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "pose-enc",
+      "length": 114.0,
+      "route": [
+        [
+          195.0,
+          186.0
+        ],
+        [
+          195.0,
+          300.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "pose",
+      "source_port": [
+        195.0,
+        186.0
+      ],
+      "target": "encpose",
+      "target_port": [
+        195.0,
+        300.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "ball-enc",
+      "length": 114.0,
+      "route": [
+        [
+          500.0,
+          186.0
+        ],
+        [
+          500.0,
+          300.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "ball",
+      "source_port": [
+        500.0,
+        186.0
+      ],
+      "target": "encball",
+      "target_port": [
+        500.0,
+        300.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "pos-enc",
+      "length": 114.0,
+      "route": [
+        [
+          805.0,
+          186.0
+        ],
+        [
+          805.0,
+          300.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "position",
+      "source_port": [
+        805.0,
+        186.0
+      ],
+      "target": "encpos",
+      "target_port": [
+        805.0,
+        300.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 1,
+      "bridges": [],
+      "crossings": [],
+      "id": "enc-cross1",
+      "length": 179.0,
+      "route": [
+        [
+          195.0,
+          376.0
+        ],
+        [
+          195.0,
+          500.0
+        ],
+        [
+          250.0,
+          500.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "encpose",
+      "source_port": [
+        195.0,
+        376.0
+      ],
+      "target": "cross",
+      "target_port": [
+        250.0,
+        500.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "enc-cross2",
+      "length": 124.0,
+      "route": [
+        [
+          500.0,
+          376.0
+        ],
+        [
+          500.0,
+          500.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "encball",
+      "source_port": [
+        500.0,
+        376.0
+      ],
+      "target": "cross",
+      "target_port": [
+        500.0,
+        500.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 1,
+      "bridges": [],
+      "crossings": [],
+      "id": "enc-cross3",
+      "length": 179.0,
+      "route": [
+        [
+          805.0,
+          376.0
+        ],
+        [
+          805.0,
+          500.0
+        ],
+        [
+          750.0,
+          500.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "encpos",
+      "source_port": [
+        805.0,
+        376.0
+      ],
+      "target": "cross",
+      "target_port": [
+        750.0,
+        500.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "cross-interaction",
+      "length": 96.0,
+      "route": [
+        [
+          500.0,
+          584.0
+        ],
+        [
+          500.0,
+          680.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "cross",
+      "source_port": [
+        500.0,
+        584.0
+      ],
+      "target": "interaction",
+      "target_port": [
+        500.0,
+        680.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "interaction-head",
+      "length": 96.0,
+      "route": [
+        [
+          500.0,
+          764.0
+        ],
+        [
+          500.0,
+          860.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "interaction",
+      "source_port": [
+        500.0,
+        764.0
+      ],
+      "target": "head",
+      "target_port": [
+        500.0,
+        860.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "head-gate",
+      "length": 96.0,
+      "route": [
+        [
+          500.0,
+          944.0
+        ],
+        [
+          500.0,
+          1040.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "head",
+      "source_port": [
+        500.0,
+        944.0
+      ],
+      "target": "gate",
+      "target_port": [
+        500.0,
+        1040.0
+      ],
+      "waypoints": []
+    }
+  ],
+  "input_schema": "v1",
+  "issues": [],
+  "mode": "flowchart",
+  "ok": true,
+  "placements": {
+    "legend": {
+      "actual": [
+        82.0,
+        1002.0
+      ],
+      "bounds": [
+        72.0,
+        988.0,
+        312.96,
+        1034.0
+      ],
+      "moved": true,
+      "requested": [
+        80.0,
+        1140.0
+      ]
+    }
+  },
+  "schema_version": 1,
+  "semantics": {
+    "details": {},
+    "ok": true,
+    "profile": "generic",
+    "style": 1,
+    "visual_theme": "Flat Icon"
+  },
+  "style": {
+    "id": 1,
+    "name": "Flat Icon"
+  },
+  "summary": {
+    "bridged_crossings": 0,
+    "edges": 9,
+    "nodes": 10
+  },
+  "text_metrics": "heuristic-v1"
+}

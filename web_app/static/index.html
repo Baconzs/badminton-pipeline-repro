@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b13">
+  <meta name="description" content="ShuttleVision 羽毛球视频智能分析工作台">
+  <title>ShuttleVision · 羽球智能工作台</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="ShuttleVision 首页">
+      <span class="brand-mark"><span></span><span></span><span></span></span>
+      <span class="brand-copy">
+        <strong>SHUTTLE<span>VISION</span></strong>
+        <small>BADMINTON INTELLIGENCE LAB</small>
+      </span>
+    </a>
+    <div class="topbar-meta">
+      <div class="system-status" id="systemStatus"><i></i><span>正在连接分析引擎</span></div>
+      <span class="version-tag">LOCAL / v0.1</span>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="hero-row">
+      <div>
+        <p class="eyebrow"><span class="eyebrow-dot"></span>VIDEO → MOTION → INSIGHT</p>
+        <h1>把每一拍，变成<br><em>可回看的比赛语言。</em></h1>
+        <p class="hero-subtitle">上传一场长比赛，选择你需要的分析深度。球路、击球、移动与回合短片，会在同一条时间轴上汇合。</p>
+      </div>
+      <div class="hero-signal" aria-hidden="true">
+        <div class="signal-ring ring-a"></div>
+        <div class="signal-ring ring-b"></div>
+        <div class="signal-ring ring-c"></div>
+        <div class="signal-core"><span>SV</span></div>
+        <div class="signal-label label-top">COURT / 01</div>
+        <div class="signal-label label-bottom">ANALYTICS READY</div>
+      </div>
+    </section>
+
+    <nav class="workflow-strip" aria-label="分析流程">
+      <a class="workflow-step current" href="#sourceStep">
+        <span class="workflow-index">01</span>
+        <span><strong>导入视频</strong><small>上传或输入服务器路径</small></span>
+      </a>
+      <a class="workflow-step" href="#modeStep">
+        <span class="workflow-index">02</span>
+        <span><strong>选择模式</strong><small>轻量、鹰眼或专业分析</small></span>
+      </a>
+      <a class="workflow-step" href="#courtStep">
+        <span class="workflow-index">03</span>
+        <span><strong>标定球场</strong><small>分析前确认四个角点</small></span>
+      </a>
+      <a class="workflow-step" href="#resultsPanel">
+        <span class="workflow-index">04</span>
+        <span><strong>查看报告</strong><small>击球、移动与回合结果</small></span>
+      </a>
+    </nav>
+
+    <div class="workspace-grid">
+      <aside class="control-rail">
+        <section class="panel source-panel" id="sourceStep">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">01 / SOURCE</p>
+              <h2>导入比赛视频</h2>
+            </div>
+            <span class="step-badge">INPUT</span>
+          </div>
+
+          <div class="drop-zone" id="dropZone" tabindex="0" role="button" aria-label="选择或拖拽视频">
+            <input id="fileInput" type="file" accept="video/mp4,video/quicktime,video/x-matroska,video/x-msvideo,video/webm,.m4v" hidden>
+            <div class="drop-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14.5v2.75A2.75 2.75 0 0 0 7.75 20h8.5A2.75 2.75 0 0 0 19 17.25V14.5"/></svg></div>
+            <strong>拖入视频，或点击选择</strong>
+            <span>MP4 / MOV / MKV / AVI · 最大 20 GB</span>
+            <div class="upload-progress" id="uploadProgress"><span></span></div>
+            <small id="uploadProgressText">等待视频文件</small>
+          </div>
+
+          <div class="or-divider"><span>或</span></div>
+          <form class="path-import" id="pathImportForm">
+            <label for="pathInput">服务器本地路径 <span>仅限本机部署</span></label>
+            <div class="input-action">
+              <input id="pathInput" type="text" placeholder="/data/.../match.mp4" autocomplete="off">
+              <button class="icon-button" type="submit" aria-label="导入路径"><svg viewBox="0 0 24 24"><path d="M5 12h13m-5-5 5 5-5 5"/></svg></button>
+            </div>
+            <p class="field-note">浏览器无法读取电脑绝对路径；路径导入仅适用于运行服务的这台机器。</p>
+          </form>
+
+          <div class="selected-source" id="selectedSource" hidden>
+            <div class="source-thumb"><img id="sourceThumb" alt="视频封面"></div>
+            <div class="source-info"><strong id="sourceName">未选择视频</strong><span id="sourceMeta">—</span></div>
+            <button class="text-button" id="clearSourceButton" type="button">更换</button>
+          </div>
+        </section>
+
+        <section class="panel options-panel" id="modeStep">
+          <div class="panel-heading compact">
+            <div>
+              <p class="section-kicker">02 / MODE</p>
+              <h2>选择分析深度</h2>
+            </div>
+            <span class="step-badge">OPTIONAL</span>
+          </div>
+
+          <label class="mode-card" for="splitToggle">
+            <span class="mode-icon scissors-icon"><svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="m8.2 8.4 10.3 8.1M8.2 15.6 18.5 7.5"/></svg></span>
+            <span class="mode-copy"><strong>自动回合切割</strong><small>按球路活动生成回合短片</small><em>SMART RALLY / BETA</em></span>
+            <span class="switch"><input id="splitToggle" type="checkbox"><i></i></span>
+          </label>
+
+          <label class="mode-card" for="hawkeyeToggle">
+            <span class="mode-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg></span>
+            <span class="mode-copy"><strong>鹰眼辅助复核</strong><small>终局轨迹落点参考、边线距离与视频回看</small><em>HAWK-EYE LITE / 2D REVIEW</em></span>
+            <span class="switch"><input id="hawkeyeToggle" type="checkbox"><i></i></span>
+          </label>
+
+          <label class="mode-card featured" for="proToggle">
+            <span class="mode-icon pulse-icon"><svg viewBox="0 0 24 24"><path d="M3 13h4l2.2-7 4.2 13 2.1-6H21"/></svg></span>
+            <span class="mode-copy"><strong>专业级回合分析</strong><small>击球检测、球员移动、热力图与动作改进建议</small><em>TRACKNET + POSE + COACH</em></span>
+            <span class="switch"><input id="proToggle" type="checkbox"><i></i></span>
+          </label>
+
+          <label class="mode-card fx-card" for="bulletTimeToggle">
+            <span class="mode-icon fx-icon"><svg viewBox="0 0 24 24"><path d="M4 12h5l2-7 3 14 2-7h4"/><path d="M3 4h4M17 20h4"/></svg></span>
+            <span class="mode-copy"><strong>子弹镜头特效</strong><small>视频中加入冻结画面与慢动作回放</small><em>BULLET FX / OPTIONAL</em></span>
+            <span class="switch"><input id="bulletTimeToggle" type="checkbox" aria-describedby="bulletTimeHint"><i></i></span>
+          </label>
+          <p class="mode-inline-note" id="bulletTimeHint">需要专业分析 · 会增加渲染时间</p>
+
+          <div class="coach-config" id="coachConfig">
+            <div class="coach-config-heading"><span>MOTION COACH / TARGET</span><small>仅在专业级分析开启时生效</small></div>
+            <div class="coach-config-row">
+              <label for="coachTarget">分析对象</label>
+              <select id="coachTarget">
+                <option value="near">下方球员</option>
+                <option value="far">上方球员</option>
+                <option value="both">双方球员</option>
+              </select>
+            </div>
+            <div class="coach-hand-grid">
+              <label for="nearDominantHand">下方持拍手
+                <select id="nearDominantHand">
+                  <option value="auto">自动识别</option>
+                  <option value="right">右手</option>
+                  <option value="left">左手</option>
+                </select>
+              </label>
+              <label for="farDominantHand">上方持拍手
+                <select id="farDominantHand">
+                  <option value="auto">自动识别</option>
+                  <option value="right">右手</option>
+                  <option value="left">左手</option>
+                </select>
+              </label>
+            </div>
+            <p>未设置持拍手时，不生成依赖正反手判断的训练建议。</p>
+          </div>
+
+          <label class="scene-option" for="sceneCutToggle">
+            <span class="scene-option-copy"><strong>跨硬切镜头继续分析</strong><small>仅当每段仍是同一球场全景、四点标定依然有效时启用</small></span>
+            <span class="switch"><input id="sceneCutToggle" type="checkbox"><i></i></span>
+          </label>
+
+          <div class="device-row">
+            <label for="deviceSelect">推理设备</label>
+            <select id="deviceSelect">
+              <option value="auto">AUTO · 自动选择</option>
+              <option value="cuda">CUDA · NVIDIA GPU</option>
+              <option value="mps">MPS · Apple GPU</option>
+              <option value="cpu">CPU · 兼容模式</option>
+            </select>
+          </div>
+          <div class="mode-explainer" id="modeExplainer">关闭分析时仅导入并预览视频，不消耗 GPU。</div>
+        </section>
+
+        <section class="panel calibrate-panel" id="courtStep">
+          <div class="panel-heading compact">
+            <div>
+              <p class="section-kicker">03 / COURT MAP</p>
+              <h2>球场四点标定</h2>
+            </div>
+            <span class="step-badge" id="calibrationCount">0 / 4</span>
+          </div>
+          <p class="calibrate-copy">在右侧视频上依次点击：左上 TL → 右上 TR → 右下 BR → 左下 BL。只预览时可以跳过。</p>
+          <div class="calibration-status" id="calibrationStatus"><i></i><span>选择视频后开始标定</span></div>
+          <div class="calibration-actions">
+            <button class="ghost-button" id="defaultCourtButton" type="button">使用建议点</button>
+            <button class="ghost-button danger-ghost" id="clearCourtButton" type="button">清除</button>
+          </div>
+        </section>
+
+        <button class="primary-cta" id="startButton" type="button" disabled>
+          <span class="cta-glow"></span><span class="cta-label">开始处理</span><span class="cta-arrow">↗</span>
+        </button>
+        <p class="cta-note" id="ctaNote">先导入视频即可开始</p>
+      </aside>
+
+      <section class="studio-column">
+        <section class="panel preview-panel">
+          <div class="panel-heading preview-heading">
+            <div>
+              <p class="section-kicker">LIVE PREVIEW <span class="live-dot"></span></p>
+              <h2 id="previewTitle">等待视频信号</h2>
+            </div>
+            <div class="preview-tools">
+              <span class="resolution-chip" id="resolutionChip">— × —</span>
+              <span class="time-chip" id="timeChip">00:00 / 00:00</span>
+            </div>
+          </div>
+          <div class="media-shell empty" id="mediaShell">
+            <video id="previewVideo" playsinline preload="metadata" controls></video>
+            <canvas id="courtCanvas" aria-label="球场标定画布"></canvas>
+            <div class="media-empty" id="mediaEmpty">
+              <div class="empty-orbit"><span></span><span></span><span></span></div>
+              <strong>导入视频后开始构建你的比赛视图</strong>
+              <span>支持拖放上传，也可以使用左侧服务器路径</span>
+            </div>
+            <div class="calibration-hint" id="calibrationHint">点击视频中的 <b>TL</b> 点位 · 依次完成四角</div>
+            <div class="media-corner corner-tl">TL</div><div class="media-corner corner-tr">TR</div><div class="media-corner corner-br">BR</div><div class="media-corner corner-bl">BL</div>
+          </div>
+          <div class="preview-footer">
+            <div class="preview-caption"><span class="status-led"></span><span id="previewCaption">PREVIEW / NO ANALYSIS</span></div>
+            <div class="scrub-hint">拖动时间轴查看关键帧 <span>⌘</span></div>
+          </div>
+        </section>
+
+        <section class="panel progress-panel" id="progressPanel" hidden>
+          <div class="panel-heading compact">
+            <div><p class="section-kicker">PROCESSING STREAM</p><h2 id="jobStage">等待任务</h2></div>
+            <div class="job-actions"><span class="job-status" id="jobStatus">QUEUED</span><button class="cancel-button" id="cancelButton" type="button">取消任务</button></div>
+          </div>
+          <div class="progress-track"><span id="progressBar"></span><b id="progressPercent">0%</b></div>
+          <div class="stage-timeline" id="stageTimeline"></div>
+          <div class="log-console" id="logConsole" aria-live="polite"><span class="console-caret">›</span><span>任务日志将在这里实时出现…</span></div>
+        </section>
+
+        <section class="panel results-panel" id="resultsPanel" hidden>
+          <div class="panel-heading result-heading">
+            <div><p class="section-kicker">04 / MATCH REPORT</p><h2>比赛回合报告</h2></div>
+            <div class="result-actions"><span class="complete-pill" id="completePill"><i></i> COMPLETED</span><a class="download-link" id="sidecarLink" href="#" download hidden><span id="sidecarLabel">下载逐帧 CSV</span> <span>↓</span></a></div>
+          </div>
+          <nav class="report-index" aria-label="报告分区">
+            <a href="#analysisOutput">分析视频</a>
+            <a href="#coachingSection">Motion Coach</a>
+            <a href="#strokeTypesSection">BST 击球类型</a>
+            <a href="#hawkeyeSection">鹰眼复核</a>
+            <a href="#rallySection">回合短片</a>
+          </nav>
+          <div class="result-body">
+            <div class="kpi-grid" id="kpiGrid"></div>
+            <div class="analysis-output" id="analysisOutput" hidden>
+              <div class="subheading"><span id="analysisVideoTitle">专业分析视频</span><small id="analysisVideoNotice">含击球、姿态与移动视觉叠加</small></div>
+              <video id="analysisVideo" controls playsinline preload="metadata"></video>
+            </div>
+            <section class="coaching-section" id="coachingSection" hidden aria-live="polite">
+              <div class="subheading"><span>MOTION COACH</span><small id="coachingNotice">仅展示通过证据门控的可靠建议</small></div>
+              <div class="coaching-grid" id="coachingGrid"></div>
+            </section>
+            <section class="stroke-types-section" id="strokeTypesSection" hidden aria-live="polite">
+              <div class="subheading"><span>BST / STROKE TYPE</span><small id="strokeTypesNotice">可选模型：逐拍击球类型 Top-3</small></div>
+              <div class="stroke-types-summary" id="strokeTypesSummary"></div>
+              <div class="stroke-types-grid" id="strokeTypesGrid"></div>
+            </section>
+            <section class="hawkeye-section" id="hawkeyeSection" hidden aria-live="polite">
+              <div class="subheading"><span>HAWK-EYE ASSIST</span><small id="hawkeyeNotice">单机位二维终局轨迹复核 · 非正式裁判判罚</small></div>
+              <div class="hawkeye-summary" id="hawkeyeSummary"></div>
+              <div class="hawkeye-grid" id="hawkeyeGrid"></div>
+            </section>
+            <div class="rally-section" id="rallySection" hidden>
+              <div class="subheading"><span>RALLY CAPSULES</span><small id="rallySummary">智能回合短片 · 可下载微调</small></div>
+              <div class="rally-grid" id="rallyGrid"></div>
+            </div>
+            <div class="result-empty" id="resultEmpty" hidden>本次只完成了视频导入与预览。打开任一分析开关后，可生成击球与回合报告。</div>
+          </div>
+        </section>
+
+        <section class="panel history-panel" id="historyPanel">
+          <div class="panel-heading compact"><div><p class="section-kicker">RECENT SESSIONS</p><h2>最近项目</h2></div><button class="text-button" id="refreshButton" type="button">刷新</button></div>
+          <div class="history-list" id="historyList"><div class="history-placeholder">还没有处理记录</div></div>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

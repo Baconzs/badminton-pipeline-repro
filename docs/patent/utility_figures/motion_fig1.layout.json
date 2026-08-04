@@ -1,0 +1,487 @@
+{
+  "canvas": {
+    "height": 760.0,
+    "width": 1200.0
+  },
+  "composition": {
+    "limits": {
+      "max_bends_per_edge": 12,
+      "max_bridged_crossings": 8,
+      "max_route_stretch": 5.0,
+      "max_total_bends": 100,
+      "min_container_gutter": 0.0,
+      "min_label_clearance": 2.0,
+      "min_node_gap": 0.0,
+      "min_segment_length": 0.0,
+      "profile": "standard"
+    },
+    "metrics": {
+      "bridged_crossings": 5,
+      "max_route_stretch": 1.069,
+      "minimum_container_gutter": 34.0,
+      "minimum_node_gap": 80.0,
+      "shortest_segment": 9.0,
+      "total_bends": 15
+    },
+    "ok": true,
+    "profile": "standard",
+    "score": 48,
+    "violations": []
+  },
+  "edges": [
+    {
+      "bends": 2,
+      "bridges": [],
+      "crossings": [],
+      "id": "camera-video",
+      "length": 137.0,
+      "route": [
+        [
+          292.0,
+          216.0
+        ],
+        [
+          312.4,
+          216.0
+        ],
+        [
+          312.4,
+          225.0
+        ],
+        [
+          420.0,
+          225.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "camera",
+      "source_port": [
+        292.0,
+        216.0
+      ],
+      "target": "video",
+      "target_port": [
+        420.0,
+        225.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 2,
+      "bridges": [
+        [
+          316.0,
+          225.0
+        ]
+      ],
+      "crossings": [
+        [
+          316.0,
+          225.0
+        ]
+      ],
+      "id": "calib-video",
+      "length": 293.0,
+      "route": [
+        [
+          292.0,
+          372.0
+        ],
+        [
+          316.0,
+          372.0
+        ],
+        [
+          316.0,
+          207.0
+        ],
+        [
+          420.0,
+          207.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "calibration",
+      "source_port": [
+        292.0,
+        372.0
+      ],
+      "target": "video",
+      "target_port": [
+        420.0,
+        207.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 2,
+      "bridges": [],
+      "crossings": [],
+      "id": "operator-evidence",
+      "length": 137.0,
+      "route": [
+        [
+          292.0,
+          528.0
+        ],
+        [
+          312.4,
+          528.0
+        ],
+        [
+          312.4,
+          519.0
+        ],
+        [
+          420.0,
+          519.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "operator",
+      "source_port": [
+        292.0,
+        528.0
+      ],
+      "target": "evidence",
+      "target_port": [
+        420.0,
+        519.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "video-pose",
+      "length": 80.0,
+      "route": [
+        [
+          605.0,
+          254.0
+        ],
+        [
+          605.0,
+          334.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "video",
+      "source_port": [
+        605.0,
+        254.0
+      ],
+      "target": "pose",
+      "target_port": [
+        605.0,
+        334.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "pose-evidence",
+      "length": 80.0,
+      "route": [
+        [
+          605.0,
+          410.0
+        ],
+        [
+          605.0,
+          490.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "pose",
+      "source_port": [
+        605.0,
+        410.0
+      ],
+      "target": "evidence",
+      "target_port": [
+        605.0,
+        490.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 3,
+      "bridges": [
+        [
+          420.0,
+          519.0
+        ],
+        [
+          605.0,
+          490.0
+        ]
+      ],
+      "crossings": [
+        [
+          420.0,
+          519.0
+        ],
+        [
+          605.0,
+          490.0
+        ]
+      ],
+      "id": "video-evidence",
+      "length": 739.0,
+      "route": [
+        [
+          790.0,
+          216.0
+        ],
+        [
+          814.0,
+          216.0
+        ],
+        [
+          814.0,
+          490.0
+        ],
+        [
+          420.0,
+          490.0
+        ],
+        [
+          420.0,
+          537.0
+        ],
+        [
+          420.0,
+          537.0
+        ]
+      ],
+      "route_stretch": 1.069,
+      "source": "video",
+      "source_port": [
+        790.0,
+        216.0
+      ],
+      "target": "evidence",
+      "target_port": [
+        420.0,
+        537.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 2,
+      "bridges": [],
+      "crossings": [],
+      "id": "evidence-display",
+      "length": 432.0,
+      "route": [
+        [
+          790.0,
+          528.0
+        ],
+        [
+          824.0,
+          528.0
+        ],
+        [
+          824.0,
+          216.0
+        ],
+        [
+          910.0,
+          216.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "evidence",
+      "source_port": [
+        790.0,
+        528.0
+      ],
+      "target": "display",
+      "target_port": [
+        910.0,
+        216.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 2,
+      "bridges": [],
+      "crossings": [],
+      "id": "evidence-storage",
+      "length": 294.0,
+      "route": [
+        [
+          790.0,
+          546.0
+        ],
+        [
+          834.0,
+          546.0
+        ],
+        [
+          834.0,
+          372.0
+        ],
+        [
+          910.0,
+          372.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "evidence",
+      "source_port": [
+        790.0,
+        546.0
+      ],
+      "target": "storage",
+      "target_port": [
+        910.0,
+        372.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 2,
+      "bridges": [
+        [
+          824.0,
+          510.0
+        ],
+        [
+          834.0,
+          510.0
+        ]
+      ],
+      "crossings": [
+        [
+          824.0,
+          510.0
+        ],
+        [
+          834.0,
+          510.0
+        ]
+      ],
+      "id": "evidence-audio",
+      "length": 138.0,
+      "route": [
+        [
+          790.0,
+          510.0
+        ],
+        [
+          850.0,
+          510.0
+        ],
+        [
+          850.0,
+          528.0
+        ],
+        [
+          910.0,
+          528.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "evidence",
+      "source_port": [
+        790.0,
+        510.0
+      ],
+      "target": "audio",
+      "target_port": [
+        910.0,
+        528.0
+      ],
+      "waypoints": []
+    }
+  ],
+  "input_schema": "v1",
+  "issues": [
+    {
+      "code": "EDGE_CROSSING_BRIDGED",
+      "coordinates": [
+        [
+          316.0,
+          225.0
+        ]
+      ],
+      "element": "calib-video",
+      "severity": "info"
+    },
+    {
+      "code": "EDGE_CROSSING_BRIDGED",
+      "coordinates": [
+        [
+          420.0,
+          519.0
+        ],
+        [
+          605.0,
+          490.0
+        ]
+      ],
+      "element": "video-evidence",
+      "severity": "info"
+    },
+    {
+      "code": "EDGE_CROSSING_BRIDGED",
+      "coordinates": [
+        [
+          824.0,
+          510.0
+        ],
+        [
+          834.0,
+          510.0
+        ]
+      ],
+      "element": "evidence-audio",
+      "severity": "info"
+    }
+  ],
+  "mode": "architecture",
+  "ok": true,
+  "placements": {
+    "legend": {
+      "actual": [
+        60.0,
+        690.0
+      ],
+      "bounds": [
+        50.0,
+        676.0,
+        474.96,
+        722.0
+      ],
+      "moved": false,
+      "requested": [
+        60.0,
+        690.0
+      ]
+    }
+  },
+  "schema_version": 1,
+  "semantics": {
+    "details": {},
+    "ok": true,
+    "profile": "generic",
+    "style": 1,
+    "visual_theme": "Flat Icon"
+  },
+  "style": {
+    "id": 1,
+    "name": "Flat Icon"
+  },
+  "summary": {
+    "bridged_crossings": 5,
+    "edges": 9,
+    "nodes": 9
+  },
+  "text_metrics": "heuristic-v1"
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version":1,"mode":"flowchart","style":1,"quality_profile":"standard","width":1000,"height":1180,
+  "title":"图3  骨骼与球路联合时序特征融合结构","subtitle":"三路输入经过时间编码、跨模态关联和双人交互后输出识别表示",
+  "style_overrides":{"font_family":"'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif"},"containers":[],
+  "nodes":[
+    {"id":"pose","kind":"rect","x":70,"y":110,"width":250,"height":76,"label":"人体框归一化电路（321）","sublabel":"双人关键点与骨骼差分","fill":"#f0fdf4","stroke":"#16a34a","title_size":17},
+    {"id":"ball","kind":"rect","x":375,"y":110,"width":250,"height":76,"label":"球点归一化电路（323）","sublabel":"视频宽高归一化","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"position","kind":"rect","x":680,"y":110,"width":250,"height":76,"label":"脚点位置归一化电路（324）","sublabel":"脚点投影与边界归一化","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"encpose","kind":"rect","x":70,"y":300,"width":250,"height":76,"label":"姿态时间编码电路（331）","sublabel":"提取局部动作变化","fill":"#f0fdf4","stroke":"#16a34a","title_size":17},
+    {"id":"encball","kind":"rect","x":375,"y":300,"width":250,"height":76,"label":"球路时间编码电路（332）","sublabel":"提取飞行节奏","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"encpos","kind":"rect","x":680,"y":300,"width":250,"height":76,"label":"位置时间编码电路（333）","sublabel":"提取场区变化","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"cross","kind":"hexagon","x":250,"y":500,"width":500,"height":84,"label":"跨模态关联单元（34）","sublabel":"以羽球序列关联双方同时刻姿态","fill":"#faf5ff","stroke":"#7c3aed","title_size":18},
+    {"id":"interaction","kind":"hexagon","x":250,"y":680,"width":500,"height":84,"label":"双人交互编码单元（35）","sublabel":"分别形成两名球员与羽球的联合表示","fill":"#f5f3ff","stroke":"#7c3aed","title_size":18},
+    {"id":"head","kind":"double_rect","x":250,"y":860,"width":500,"height":84,"label":"分类输出单元（36）","sublabel":"拼接两名球员与羽球的全局表示","fill":"#eff6ff","stroke":"#2563eb","title_size":18},
+    {"id":"gate","kind":"hexagon","x":250,"y":1040,"width":500,"height":84,"label":"置信门控单元（37）","sublabel":"低证据输出“待确认”，不强行定类","fill":"#fff7ed","stroke":"#f97316","title_size":18}
+  ],
+  "arrows":[
+    {"id":"pose-enc","source":"pose","target":"encpose","source_port":"bottom","target_port":"top","flow":"data"},
+    {"id":"ball-enc","source":"ball","target":"encball","source_port":"bottom","target_port":"top","flow":"data"},
+    {"id":"pos-enc","source":"position","target":"encpos","source_port":"bottom","target_port":"top","flow":"data"},
+    {"id":"enc-cross1","source":"encpose","target":"cross","source_port":"bottom","target_port":"top-left","flow":"data"},
+    {"id":"enc-cross2","source":"encball","target":"cross","source_port":"bottom","target_port":"top","flow":"data"},
+    {"id":"enc-cross3","source":"encpos","target":"cross","source_port":"bottom","target_port":"top-right","flow":"data"},
+    {"id":"cross-interaction","source":"cross","target":"interaction","source_port":"bottom","target_port":"top","flow":"control"},
+    {"id":"interaction-head","source":"interaction","target":"head","source_port":"bottom","target_port":"top","flow":"data"},
+    {"id":"head-gate","source":"head","target":"gate","source_port":"bottom","target_port":"top","flow":"control"}
+  ],
+  "legend_orientation":"horizontal","legend_x":80,"legend_y":1140,"legend_locked":false,
+  "legend":[{"flow":"data","label":"特征序列"},{"flow":"control","label":"编码/门控"}],
+  "footer":"图3  骨骼与球路联合时序特征融合结构","footer_position":"bottom-right"
+}

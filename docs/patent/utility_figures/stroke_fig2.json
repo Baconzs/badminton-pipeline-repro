@@ -1,0 +1,34 @@
+{
+  "schema_version":1,"mode":"architecture","style":1,"quality_profile":"standard","width":1200,"height":760,
+  "title":"图2  联合时序识别装置的模块安装结构","subtitle":"采集接口、加速主板、模型存储和结果面板的实体连接",
+  "style_overrides":{"font_family":"'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif"},
+  "containers":[
+    {"id":"front","x":36,"y":112,"width":340,"height":500,"label":"采集接口板（2）","subtitle":"接入三类时序信号"},
+    {"id":"board","x":414,"y":112,"width":350,"height":500,"label":"联合处理板（3）","subtitle":"加速与模型执行"},
+    {"id":"shell","x":802,"y":112,"width":362,"height":500,"label":"装置壳体（1）与结果触控屏（4）","subtitle":"散热、防护和操作"}
+  ],
+  "nodes":[
+    {"id":"videoport","kind":"rect","x":74,"y":178,"width":260,"height":78,"label":"视频输入端口（21）","sublabel":"图像与时间戳","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"poseport","kind":"rect","x":74,"y":334,"width":260,"height":78,"label":"姿态数据端口（22）","sublabel":"双人关键点序列","fill":"#f0fdf4","stroke":"#16a34a","title_size":17},
+    {"id":"courtport","kind":"rect","x":74,"y":490,"width":260,"height":78,"label":"场地数据端口（23）","sublabel":"四点标定和脚点坐标","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"sync","kind":"double_rect","x":452,"y":178,"width":274,"height":78,"label":"同步与缓存电路（31）","sublabel":"时间戳对齐、缺失屏蔽","fill":"#f5f3ff","stroke":"#7c3aed","title_size":17},
+    {"id":"accel","kind":"rect","x":452,"y":334,"width":274,"height":78,"label":"一维时序卷积电路（334）","sublabel":"卷积和注意力计算","fill":"#f0fdf4","stroke":"#16a34a","title_size":17},
+    {"id":"model","kind":"double_rect","x":452,"y":490,"width":274,"height":78,"label":"模型存储模块（5）","sublabel":"类别表、参数和版本","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"screen","kind":"rect","x":840,"y":178,"width":286,"height":78,"label":"结果触控屏（4）","sublabel":"类别与置信信息","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"indicator","kind":"rect","x":840,"y":334,"width":286,"height":78,"label":"状态指示灯（7）","sublabel":"输入、处理、异常","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"cooling","kind":"rect","x":840,"y":490,"width":286,"height":78,"label":"散热与电源组件（8）","sublabel":"风道、温度和电池","fill":"#ffffff","stroke":"#94a3b8","title_size":17}
+  ],
+  "arrows":[
+    {"id":"video-sync","source":"videoport","target":"sync","source_port":"right","target_port":"left","flow":"read"},
+    {"id":"pose-sync","source":"poseport","target":"sync","source_port":"right","target_port":"left","flow":"data"},
+    {"id":"court-sync","source":"courtport","target":"sync","source_port":"right","target_port":"left","flow":"data"},
+    {"id":"sync-accel","source":"sync","target":"accel","source_port":"bottom","target_port":"top","flow":"control"},
+    {"id":"accel-model","source":"accel","target":"model","source_port":"bottom","target_port":"top","flow":"write"},
+    {"id":"accel-screen","source":"accel","target":"screen","source_port":"right","target_port":"left","flow":"read"},
+    {"id":"screen-indicator","source":"screen","target":"indicator","source_port":"bottom","target_port":"top","flow":"control"},
+    {"id":"cooling-accel","source":"cooling","target":"accel","source_port":"left","target_port":"right","flow":"control","label":"供电/温度"}
+  ],
+  "legend_orientation":"horizontal","legend_x":60,"legend_y":690,"legend_locked":true,
+  "legend":[{"flow":"read","label":"输入/显示"},{"flow":"data","label":"姿态/位置"},{"flow":"write","label":"模型存储"},{"flow":"control","label":"同步/控制"}],
+  "footer":"图2  联合时序识别装置的模块安装结构","footer_position":"bottom-right"
+}

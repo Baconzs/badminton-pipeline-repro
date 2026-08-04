@@ -1,0 +1,363 @@
+{
+  "schema_version": 1,
+  "mode": "architecture",
+  "template_type": "architecture",
+  "style": 1,
+  "quality_profile": "showcase",
+  "width": 1200,
+  "height": 760,
+  "title": "羽毛球运动分析系统总体结构",
+  "subtitle": "视频输入与标定 · 共享证据旁路 · 落点与动作输出",
+  "style_overrides": {
+    "font_family": "'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif"
+  },
+  "containers": [
+    {
+      "id": "input_layer",
+      "x": 36,
+      "y": 84,
+      "width": 1128,
+      "height": 146,
+      "label": "输入与任务编排",
+      "subtitle": "视频、标定、配置和资源调度"
+    },
+    {
+      "id": "core_layer",
+      "x": 36,
+      "y": 250,
+      "width": 1128,
+      "height": 286,
+      "label": "分析处理核心",
+      "subtitle": "多模块共享真实观测和可追溯证据"
+    },
+    {
+      "id": "output_layer",
+      "x": 36,
+      "y": 560,
+      "width": 1128,
+      "height": 108,
+      "label": "结果输出模块",
+      "subtitle": "视频、报告、训练建议"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "video",
+      "kind": "rect",
+      "x": 60,
+      "y": 145,
+      "width": 180,
+      "height": 58,
+      "label": "单目视频",
+      "sublabel": "帧率 · 分辨率",
+      "fill": "#eff6ff",
+      "stroke": "#2563eb",
+      "title_size": 15
+    },
+    {
+      "id": "calibration",
+      "kind": "rect",
+      "x": 280,
+      "y": 145,
+      "width": 190,
+      "height": 58,
+      "label": "球场标定",
+      "sublabel": "TL / TR / BR / BL",
+      "fill": "#eff6ff",
+      "stroke": "#2563eb",
+      "title_size": 15
+    },
+    {
+      "id": "config",
+      "kind": "rect",
+      "x": 510,
+      "y": 145,
+      "width": 190,
+      "height": 58,
+      "label": "任务配置",
+      "sublabel": "目标 · 开关 · 设备",
+      "fill": "#fff7ed",
+      "stroke": "#f97316",
+      "title_size": 15
+    },
+    {
+      "id": "compute",
+      "kind": "rect",
+      "x": 740,
+      "y": 145,
+      "width": 180,
+      "height": 58,
+      "label": "任务调度",
+      "sublabel": "队列 · 单工作线程",
+      "fill": "#fff7ed",
+      "stroke": "#f97316",
+      "title_size": 15
+    },
+    {
+      "id": "queue",
+      "kind": "rect",
+      "x": 960,
+      "y": 145,
+      "width": 180,
+      "height": 58,
+      "label": "计算资源",
+      "sublabel": "CPU / GPU / NPU",
+      "fill": "#fff7ed",
+      "stroke": "#f97316",
+      "title_size": 15
+    },
+    {
+      "id": "input_calib",
+      "kind": "rect",
+      "x": 60,
+      "y": 310,
+      "width": 180,
+      "height": 72,
+      "label": "视频输入与标定",
+      "sublabel": "透视变换 · 坐标系",
+      "fill": "#eff6ff",
+      "stroke": "#2563eb",
+      "title_size": 14
+    },
+    {
+      "id": "detect",
+      "kind": "double_rect",
+      "x": 280,
+      "y": 310,
+      "width": 190,
+      "height": 72,
+      "label": "球体检测与融合",
+      "sublabel": "羽球 · 来源分层",
+      "fill": "#f5f3ff",
+      "stroke": "#7c3aed",
+      "title_size": 14
+    },
+    {
+      "id": "pose_hit",
+      "kind": "rect",
+      "x": 510,
+      "y": 310,
+      "width": 190,
+      "height": 72,
+      "label": "姿态与击球事件",
+      "sublabel": "终局锚点 · 接触门控",
+      "fill": "#fff7ed",
+      "stroke": "#f97316",
+      "title_size": 14
+    },
+    {
+      "id": "landing",
+      "kind": "rect",
+      "x": 740,
+      "y": 310,
+      "width": 180,
+      "height": 72,
+      "label": "终局落点复核",
+      "sublabel": "运动→静止 · 遮挡恢复",
+      "fill": "#f0fdf4",
+      "stroke": "#16a34a",
+      "title_size": 14
+    },
+    {
+      "id": "evidence",
+      "kind": "rect",
+      "x": 280,
+      "y": 440,
+      "width": 190,
+      "height": 72,
+      "label": "证据旁路数据",
+      "sublabel": "来源 · 置信度 · 证据帧",
+      "fill": "#f0fdf4",
+      "stroke": "#16a34a",
+      "title_size": 14
+    },
+    {
+      "id": "projection",
+      "kind": "rect",
+      "x": 510,
+      "y": 440,
+      "width": 190,
+      "height": 72,
+      "label": "球场投影与判定",
+      "sublabel": "单应性 · 距线 · 三状态",
+      "fill": "#eff6ff",
+      "stroke": "#2563eb",
+      "title_size": 14
+    },
+    {
+      "id": "coaching",
+      "kind": "double_rect",
+      "x": 740,
+      "y": 440,
+      "width": 180,
+      "height": 72,
+      "label": "动作建议门控",
+      "sublabel": "姿态 · 球路 · BST · 多拍",
+      "fill": "#faf5ff",
+      "stroke": "#7c3aed",
+      "title_size": 14
+    },
+    {
+      "id": "result",
+      "kind": "rect",
+      "x": 960,
+      "y": 440,
+      "width": 180,
+      "height": 72,
+      "label": "结果输出",
+      "sublabel": "报告 · 视频 · 建议",
+      "fill": "#f5f3ff",
+      "stroke": "#7c3aed",
+      "title_size": 14
+    },
+    {
+      "id": "artifacts",
+      "kind": "rect",
+      "x": 360,
+      "y": 585,
+      "width": 480,
+      "height": 58,
+      "label": "结构化结果与可视化",
+      "sublabel": "叠加视频 · 落点报告 · Motion Coach · CSV / JSON",
+      "fill": "#f5f3ff",
+      "stroke": "#7c3aed",
+      "title_size": 15
+    }
+  ],
+  "arrows": [
+    {
+      "id": "video-calibration",
+      "source": "video",
+      "target": "calibration",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "control"
+    },
+    {
+      "id": "calibration-detect",
+      "source": "calibration",
+      "target": "detect",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "control",
+      "label": "标定"
+    },
+    {
+      "id": "config-pose",
+      "source": "config",
+      "target": "pose_hit",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "control",
+      "label": "配置"
+    },
+    {
+      "id": "compute-landing",
+      "source": "compute",
+      "target": "landing",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "control",
+      "label": "调度"
+    },
+    {
+      "id": "queue-result",
+      "source": "queue",
+      "target": "result",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "control",
+      "label": "资源"
+    },
+    {
+      "id": "input-detect",
+      "source": "input_calib",
+      "target": "detect",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "data"
+    },
+    {
+      "id": "detect-pose",
+      "source": "detect",
+      "target": "pose_hit",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "data"
+    },
+    {
+      "id": "pose-landing",
+      "source": "pose_hit",
+      "target": "landing",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "data"
+    },
+    {
+      "id": "detect-evidence",
+      "source": "detect",
+      "target": "evidence",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "write",
+      "label": "记录"
+    },
+    {
+      "id": "evidence-projection",
+      "source": "evidence",
+      "target": "projection",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "write"
+    },
+    {
+      "id": "landing-projection",
+      "source": "landing",
+      "target": "projection",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "data",
+      "label": "落点",
+      "route_points": [[830, 410], [605, 410]]
+    },
+    {
+      "id": "projection-coaching",
+      "source": "projection",
+      "target": "coaching",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "data"
+    },
+    {
+      "id": "coaching-result",
+      "source": "coaching",
+      "target": "result",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "read"
+    },
+    {
+      "id": "result-artifacts",
+      "source": "result",
+      "target": "artifacts",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "read",
+      "label": "发布",
+      "route_points": [[1050, 548], [600, 548]]
+    }
+  ],
+  "legend_orientation": "horizontal",
+  "legend_x": 42,
+  "legend_y": 706,
+  "legend_locked": true,
+  "legend": [
+    {"flow": "control", "label": "配置 / 调度"},
+    {"flow": "data", "label": "分析数据"},
+    {"flow": "write", "label": "证据旁路"},
+    {"flow": "read", "label": "结果输出"}
+  ],
+  "footer": "图1  专利系统总体结构",
+  "footer_x": 1000,
+  "footer_y": 746
+}

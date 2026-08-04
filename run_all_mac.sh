@@ -9,6 +9,8 @@ MANUAL_COURT=0
 PYTHON_BIN="python3"
 FFMPEG_BIN_OVERRIDE="${FFMPEG_BIN_OVERRIDE:-}"
 YOLO_DEVICE=""
+TRACKNET_DEVICE="auto"
+CONTINUE_BALL_AFTER_SCENE_CUT=0
 TRACKNET_BATCH_SIZE=4
 TRACKNET_MAX_SAMPLE_NUM=300
 TRACKNET_TILE_OVERLAP=0.25
@@ -28,6 +30,9 @@ TRACKNET_DUAL_PHASE=1
 TORCH_ACCEL_AVAILABLE=0
 CLASSICAL_BALL_FALLBACK=1
 CLASSICAL_TRIGGER_COVERAGE=0.35
+# Bullet-time/slow-motion rendering is off by default for the Web UI, but the
+# feature remains available as an explicit opt-in for the UI and command line.
+ENABLE_BULLET_TIME_FX="${BADMINTON_ENABLE_BULLET_TIME_FX:-0}"
 
 usage() {
   cat <<'EOF'
@@ -43,6 +48,9 @@ Options:
   --manual-court                Enable manual court clicking (TL->TR->BR->BL)
   --python PATH                 Python executable (default: python3; also used for imageio-ffmpeg fallback)
   --yolo-device STR             YOLO device for overlay stage, e.g. mps/cpu (default: auto)
+  --tracknet-device STR         TrackNet device: auto/cuda/mps/cpu (default: auto)
+  --continue-ball-after-scene-cut
+                                Continue ball analysis after hard cuts when all shots share one court calibration
   --tracknet-batch-size N       TrackNet inference batch size (default: 4, lower if OOM)
   --tracknet-max-sample-num N   Max frames sampled for median image (default: 300, lower if OOM)
   --tracknet-vis-thresh N       TrackNet heatmap candidate threshold (default: 0.20; env override)
@@ -58,6 +66,8 @@ Options:
   --classical-ball-fallback      Fuse strict CPU motion tracks for weak/local TrackNet gaps (default)
   --no-classical-ball-fallback   Disable classical shuttle fusion/fallback
   --classical-trigger-coverage N Use classical-only fallback below this real TrackNet coverage (default: 0.35)
+  --enable-bullet-time-fx      Enable the optional bullet-time/slow-motion FX (opt-in)
+  --no-bullet-time-fx          Keep the normal-speed overlay (default)
   -h, --help                    Show help
 EOF
 }
@@ -76,6 +86,10 @@ while [[ $# -gt 0 ]]; do
       PYTHON_BIN="${2:-}"; shift 2 ;;
     --yolo-device)
       YOLO_DEVICE="${2:-}"; shift 2 ;;
+    --tracknet-device)
+      TRACKNET_DEVICE="${2:-}"; shift 2 ;;
+    --continue-ball-after-scene-cut)
+      CONTINUE_BALL_AFTER_SCENE_CUT=1; shift ;;
     --tracknet-batch-size)
       TRACKNET_BATCH_SIZE="${2:-}"; shift 2 ;;
     --tracknet-max-sample-num)
@@ -104,6 +118,10 @@ while [[ $# -gt 0 ]]; do
       CLASSICAL_BALL_FALLBACK=0; shift ;;
     --classical-trigger-coverage)
       CLASSICAL_TRIGGER_COVERAGE="${2:-}"; shift 2 ;;
+    --enable-bullet-time-fx)
+      ENABLE_BULLET_TIME_FX=1; shift ;;
+    --no-bullet-time-fx)
+      ENABLE_BULLET_TIME_FX=0; shift ;;
     -h|--help)
       usage; exit 0 ;;
     *)
@@ -112,6 +130,11 @@ while [[ $# -gt 0 ]]; do
       exit 1 ;;
   esac
 done
+
+if [[ "${ENABLE_BULLET_TIME_FX}" != "0" && "${ENABLE_BULLET_TIME_FX}" != "1" ]]; then
+  echo "[ERROR] Bullet-time FX switch must be 0 or 1: ${ENABLE_BULLET_TIME_FX}" >&2
+  exit 1
+fi
 
 if [[ -z "${INPUT_VIDEO}" ]]; then
   echo "[ERROR] --input-video is required." >&2
@@ -170,7 +193,16 @@ else
 fi
 YOLO_WEIGHT="${SCRIPT_DIR}/weights/yolov8s-pose.pt"
 
-for f in "${TRACKNET_SCRIPT}" "${OVERLAY_SCRIPT}" "${FX_SCRIPT}" "${TRACKNET_WEIGHT}" "${YOLO_WEIGHT}"; do
+required_files=(
+  "${TRACKNET_SCRIPT}"
+  "${OVERLAY_SCRIPT}"
+  "${TRACKNET_WEIGHT}"
+  "${YOLO_WEIGHT}"
+)
+if [[ "${ENABLE_BULLET_TIME_FX}" == "1" ]]; then
+  required_files+=("${FX_SCRIPT}")
+fi
+for f in "${required_files[@]}"; do
   if [[ ! -f "${f}" ]]; then
     echo "[ERROR] Missing required file: ${f}" >&2
     exit 1
@@ -191,6 +223,8 @@ TRACKNET_CSV_SECONDARY="${TRACKNET_PHASE_OUT_DIR}/${VIDEO_STEM}_ball.csv"
 OVERLAY_OUT="${WORK_ROOT}/end1_ball_tracking_official_fused.mp4"
 OVERLAY_TRACKING_CSV="${OVERLAY_OUT%.mp4}_ball_tracking.csv"
 FX_OUT="${WORK_ROOT}/end1_ball_tracking_official_fused_fx.mp4"
+FX_H264_OUT="${FX_OUT%.mp4}_h264.mp4"
+OVERLAY_H264_OUT="${OVERLAY_OUT%.mp4}_h264.mp4"
 
 resolve_ffmpeg_bin() {
   if [[ -n "${FFMPEG_BIN_OVERRIDE}" && -x "${FFMPEG_BIN_OVERRIDE}" ]]; then
@@ -259,7 +293,7 @@ tracknet_args=(
   "--tracknet_file" "${TRACKNET_WEIGHT}"
   "--save_dir" "${TRACKNET_OUT_DIR}"
   "--output_video"
-  "--device" "auto"
+  "--device" "${TRACKNET_DEVICE}"
   "--large_video"
   "--batch_size" "${TRACKNET_BATCH_SIZE}"
   "--max_sample_num" "${TRACKNET_MAX_SAMPLE_NUM}"
@@ -306,7 +340,7 @@ PY
       "--video_file" "${INPUT_VIDEO}"
       "--tracknet_file" "${TRACKNET_WEIGHT}"
       "--save_dir" "${TRACKNET_PHASE_OUT_DIR}"
-      "--device" "auto"
+      "--device" "${TRACKNET_DEVICE}"
       "--large_video"
       "--batch_size" "${TRACKNET_BATCH_SIZE}"
       "--max_sample_num" "${TRACKNET_MAX_SAMPLE_NUM}"
@@ -363,8 +397,13 @@ overlay_args=(
   "--draw_pose"
   "--classical_trigger_coverage" "${CLASSICAL_TRIGGER_COVERAGE}"
   "--ball_top_extension" "${TRACKNET_COURT_TOP_EXTENSION}"
-  "--stop_ball_at_first_scene_cut"
 )
+
+if [[ "${CONTINUE_BALL_AFTER_SCENE_CUT}" == "1" ]]; then
+  overlay_args+=("--continue_ball_after_scene_cut")
+else
+  overlay_args+=("--stop_ball_at_first_scene_cut")
+fi
 
 if [[ -n "${TRACKNET_CSV_SECONDARY}" ]]; then
   overlay_args+=("--ball_csv_secondary" "${TRACKNET_CSV_SECONDARY}")
@@ -408,21 +447,32 @@ if [[ -f "${OVERLAY_TRACKING_CSV}" ]]; then
 fi
 transcode_to_h264 "${OVERLAY_OUT}" "${INPUT_VIDEO}"
 
-echo "[STEP 3/3] Bullet-time FX..."
-"${PYTHON_BIN}" "${FX_SCRIPT}" \
-  --input "${OVERLAY_OUT}" \
-  --output "${FX_OUT}"
+if [[ "${ENABLE_BULLET_TIME_FX}" == "1" ]]; then
+  echo "[STEP 3/3] Bullet-time FX (explicitly enabled)..."
+  "${PYTHON_BIN}" "${FX_SCRIPT}" \
+    --input "${OVERLAY_OUT}" \
+    --output "${FX_OUT}"
+else
+  # Keep the historical output name so downstream consumers do not need to
+  # special-case a temporarily disabled feature.  This is a byte-for-byte
+  # normal-speed overlay copy; the FX script is not imported or executed.
+  echo "[STEP 3/3] Bullet-time FX disabled; keeping normal-speed overlay."
+  cp -f "${OVERLAY_OUT}" "${FX_OUT}"
+  if [[ -f "${OVERLAY_H264_OUT}" ]]; then
+    cp -f "${OVERLAY_H264_OUT}" "${FX_H264_OUT}"
+  fi
+fi
 
 if [[ ! -f "${FX_OUT}" ]]; then
   echo "[ERROR] Missing final FX output: ${FX_OUT}" >&2
   exit 1
 fi
 
-FX_H264_OUT="${FX_OUT%.mp4}_h264.mp4"
-transcode_to_h264 "${FX_OUT}"
+if [[ "${ENABLE_BULLET_TIME_FX}" == "1" ]]; then
+  transcode_to_h264 "${FX_OUT}"
+fi
 
 TRACKNET_H264_OUT="${TRACKNET_VIDEO_CANONICAL%.mp4}_h264.mp4"
-OVERLAY_H264_OUT="${OVERLAY_OUT%.mp4}_h264.mp4"
 echo "[DONE] Repro pipeline finished."
 ls -lh "${TRACKNET_VIDEO_CANONICAL}" "${TRACKNET_CSV}" "${OVERLAY_OUT}" "${FX_OUT}"
 [[ -f "${OVERLAY_TRACKING_CSV}" ]] && ls -lh "${OVERLAY_TRACKING_CSV}"

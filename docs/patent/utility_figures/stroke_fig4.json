@@ -1,0 +1,34 @@
+{
+  "schema_version":1,"mode":"architecture","style":1,"quality_profile":"standard","width":1200,"height":760,
+  "title":"图4  击球类型识别结果与可靠性显示结构","subtitle":"类别候选、模型置信度、姿态覆盖率和球点覆盖率的联合显示",
+  "style_overrides":{"font_family":"'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif"},
+  "containers":[
+    {"id":"record","x":36,"y":112,"width":320,"height":500,"label":"事件记录（31、32）","subtitle":"按帧号与击球序号关联"},
+    {"id":"card","x":392,"y":112,"width":420,"height":500,"label":"联合处理板（3）","subtitle":"固定字段和可复核证据"},
+    {"id":"decision","x":848,"y":112,"width":316,"height":500,"label":"结果触控屏（4）与导出接口（6）","subtitle":"类型报告与训练门控"}
+  ],
+  "nodes":[
+    {"id":"hit","kind":"rect","x":72,"y":190,"width":248,"height":78,"label":"同步与缓存电路（31）","sublabel":"帧号、球员侧别、回合","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"window","kind":"rect","x":72,"y":342,"width":248,"height":78,"label":"时序预处理单元（32）","sublabel":"姿态与球点覆盖","fill":"#f0fdf4","stroke":"#16a34a","title_size":17},
+    {"id":"source","kind":"double_rect","x":72,"y":494,"width":248,"height":78,"label":"模型存储模块（5）","sublabel":"视频窗口与序列长度","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"top3","kind":"rect","x":438,"y":190,"width":328,"height":78,"label":"分类输出单元（36）","sublabel":"类别名称与排序","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"confidence","kind":"rect","x":438,"y":342,"width":328,"height":78,"label":"置信门控单元（37）","sublabel":"第一类别与第二类别差值","fill":"#f5f3ff","stroke":"#7c3aed","title_size":17},
+    {"id":"coverage","kind":"rect","x":438,"y":494,"width":328,"height":78,"label":"球点覆盖率比较电路（374）","sublabel":"姿态覆盖与球点覆盖","fill":"#f0fdf4","stroke":"#16a34a","title_size":17},
+    {"id":"type","kind":"rect","x":900,"y":190,"width":212,"height":78,"label":"结果触控屏（4）","sublabel":"可靠 / 待确认","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"coach","kind":"hexagon","x":900,"y":342,"width":212,"height":78,"label":"状态输出电路（375）","sublabel":"仅一致且达标时采用","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"export","kind":"rect","x":900,"y":494,"width":212,"height":78,"label":"结果导出接口（6）","sublabel":"结构化结果与复看入口","fill":"#ffffff","stroke":"#94a3b8","title_size":17}
+  ],
+  "arrows":[
+    {"id":"hit-window","source":"hit","target":"window","source_port":"bottom","target_port":"top","flow":"control"},
+    {"id":"window-top3","source":"window","target":"top3","source_port":"right","target_port":"left","flow":"data"},
+    {"id":"source-coverage","source":"source","target":"coverage","source_port":"right","target_port":"left","flow":"read"},
+    {"id":"top3-confidence","source":"top3","target":"confidence","source_port":"bottom","target_port":"top","flow":"data"},
+    {"id":"confidence-coverage","source":"confidence","target":"coverage","source_port":"bottom","target_port":"top","flow":"data"},
+    {"id":"top3-type","source":"top3","target":"type","source_port":"right","target_port":"left","flow":"read"},
+    {"id":"coverage-coach","source":"coverage","target":"coach","source_port":"right","target_port":"left","flow":"control"},
+    {"id":"coach-export","source":"coach","target":"export","source_port":"bottom","target_port":"top","flow":"write"}
+  ],
+  "legend_orientation":"horizontal","legend_x":60,"legend_y":690,"legend_locked":true,
+  "legend":[{"flow":"data","label":"识别数据"},{"flow":"read","label":"复看读取"},{"flow":"control","label":"可靠性门控"},{"flow":"write","label":"导出"}],
+  "footer":"图4  击球类型识别结果与可靠性显示结构","footer_position":"bottom-right"
+}

@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" width="1200" height="760" data-generator="fireworks-tech-graph" data-schema-version="1" data-text-metrics="heuristic-v1" data-style-id="1" data-visual-theme="Flat Icon" data-diagram-type="architecture" data-motion-scene="" data-semantic-profile="generic" data-semantic-valid="true" data-quality-profile="standard" data-max-bends-per-edge="12" data-max-total-bends="100" data-max-route-stretch="5.0" data-max-bridged-crossings="8" data-min-node-gap="0.0" data-min-container-gutter="0.0" data-min-label-clearance="2.0" data-min-segment-length="0.0">
+  <defs>
+    <marker id="arrowA" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrowB" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/>
+    </marker>
+    <marker id="arrowC" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowE" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#f97316"/>
+    </marker>
+    <marker id="arrowF" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrowG" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/>
+    </marker>
+    <marker id="arrowH" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6b7280"/>
+    </marker>
+    <filter id="shadowSoft" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <filter id="shadowGlass" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#020617" flood-opacity="0.28"/>
+    </filter>
+    <style>
+    text { font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif; }
+    .title { font-size: 30px; font-weight: 700; fill: #111827; }
+    .subtitle { font-size: 14px; font-weight: 500; fill: #6b7280; }
+    .section { font-size: 13px; font-weight: 700; fill: #2563eb; letter-spacing: 1.4px; }
+    .section-sub { font-size: 12px; font-weight: 500; fill: #94a3b8; }
+    .node-title { font-weight: 700; fill: #111827; }
+    .node-sub { font-size: 12px; font-weight: 500; fill: #6b7280; }
+    .node-type { font-size: 12px; font-weight: 700; fill: #9ca3af; letter-spacing: 0.08em; }
+    .arrow-label { font-size: 12px; font-weight: 600; fill: #6b7280; }
+    .legend { font-size: 12px; font-weight: 500; fill: #6b7280; }
+    .footnote { font-size: 12px; font-weight: 500; fill: #94a3b8; }
+    .metric-label { font-size: 8.5px; font-weight: 700; fill: #94a3b8; text-transform: uppercase; }
+    .metric-value { font-size: 9.5px; font-weight: 700; fill: #111827; }
+    </style>
+  </defs>
+  <rect data-graph-role="background" width="1200.0" height="760.0" fill="#ffffff"/>
+  <text x="600.0" y="56" text-anchor="middle" class="title">图2  联合时序识别装置的模块安装结构</text>
+  <text x="600.0" y="82" text-anchor="middle" class="subtitle">采集接口、加速主板、模型存储和结果面板的实体连接</text>
+  <g id="front" data-graph-role="container" data-container-id="front" data-semantic-role="boundary" data-graph-bounds="36,112,376,612">
+  <rect data-graph-role="container" x="36.0" y="112.0" width="340.0" height="500.0" rx="16.0" fill="none" stroke="#dbe5f1" stroke-width="1.4" stroke-dasharray="6 5"/>
+  <text x="54.0" y="136.0" class="section">采集接口板（2）</text>
+  <text x="54.0" y="156.0" class="section-sub">接入三类时序信号</text>
+    <rect id="front-header" data-graph-role="reserved" data-reserved-kind="container-header" x="44" y="118" width="128.54" height="54" fill="none" stroke="none"/>
+  </g>
+  <g id="board" data-graph-role="container" data-container-id="board" data-semantic-role="boundary" data-graph-bounds="414,112,764,612">
+  <rect data-graph-role="container" x="414.0" y="112.0" width="350.0" height="500.0" rx="16.0" fill="none" stroke="#dbe5f1" stroke-width="1.4" stroke-dasharray="6 5"/>
+  <text x="432.0" y="136.0" class="section">联合处理板（3）</text>
+  <text x="432.0" y="156.0" class="section-sub">加速与模型执行</text>
+    <rect id="board-header" data-graph-role="reserved" data-reserved-kind="container-header" x="422" y="118" width="128.54" height="54" fill="none" stroke="none"/>
+  </g>
+  <g id="shell" data-graph-role="container" data-container-id="shell" data-semantic-role="boundary" data-graph-bounds="802,112,1164,612">
+  <rect data-graph-role="container" x="802.0" y="112.0" width="362.0" height="500.0" rx="16.0" fill="none" stroke="#dbe5f1" stroke-width="1.4" stroke-dasharray="6 5"/>
+  <text x="820.0" y="136.0" class="section">装置壳体（1）与结果触控屏（4）</text>
+  <text x="820.0" y="156.0" class="section-sub">散热、防护和操作</text>
+    <rect id="shell-header" data-graph-role="reserved" data-reserved-kind="container-header" x="810" y="118" width="227.08" height="54" fill="none" stroke="none"/>
+  </g>
+  <path id="video-sync" data-graph-role="edge" data-edge-id="video-sync" data-source="videoport" data-target="sync" data-edge-kind="flow" data-topic-id="" data-flow="read" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="2" data-route-stretch="1.0" data-bridges="" d="M 334,217 L 354.4,217 L 354.4,235 L 452,235" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowC)"/>
+  <path id="pose-sync-bridge-mask" data-graph-role="bridge-mask" data-owner="pose-sync" d="M 334,373 L 358,373 L 358,240 A 5 5 0 0 0 358,230 L 358,217 L 452,217" fill="none" stroke="#ffffff" stroke-width="6.9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path id="pose-sync" data-graph-role="edge" data-edge-id="pose-sync" data-source="poseport" data-target="sync" data-edge-kind="flow" data-topic-id="" data-flow="data" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="2" data-route-stretch="1.0" data-bridges="358,235" d="M 334,373 L 358,373 L 358,240 A 5 5 0 0 0 358,230 L 358,217 L 452,217" fill="none" stroke="#f97316" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowE)"/>
+  <path id="court-sync-bridge-mask" data-graph-role="bridge-mask" data-owner="court-sync" d="M 334,529 L 393,529 L 393,240 A 5 5 0 0 0 393,230 L 393,222 A 5 5 0 0 0 393,212 L 393,199 L 452,199" fill="none" stroke="#ffffff" stroke-width="6.9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path id="court-sync" data-graph-role="edge" data-edge-id="court-sync" data-source="courtport" data-target="sync" data-edge-kind="flow" data-topic-id="" data-flow="data" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="2" data-route-stretch="1.0" data-bridges="393,235;393,217" d="M 334,529 L 393,529 L 393,240 A 5 5 0 0 0 393,230 L 393,222 A 5 5 0 0 0 393,212 L 393,199 L 452,199" fill="none" stroke="#f97316" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowE)"/>
+  <path id="sync-accel" data-graph-role="edge" data-edge-id="sync-accel" data-source="sync" data-target="accel" data-edge-kind="flow" data-topic-id="" data-flow="control" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="0" data-route-stretch="1.0" data-bridges="" d="M 589,256 L 589,334" fill="none" stroke="#7c3aed" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowA)"/>
+  <path id="accel-model" data-graph-role="edge" data-edge-id="accel-model" data-source="accel" data-target="model" data-edge-kind="flow" data-topic-id="" data-flow="write" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="0" data-route-stretch="1.0" data-bridges="" d="M 589,412 L 589,490" fill="none" stroke="#10b981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowB)"/>
+  <path id="accel-screen" data-graph-role="edge" data-edge-id="accel-screen" data-source="accel" data-target="screen" data-edge-kind="flow" data-topic-id="" data-flow="read" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="2" data-route-stretch="1.0" data-bridges="" d="M 726,364 L 750,364 L 750,217 L 840,217" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowC)"/>
+  <path id="screen-indicator" data-graph-role="edge" data-edge-id="screen-indicator" data-source="screen" data-target="indicator" data-edge-kind="flow" data-topic-id="" data-flow="control" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="0" data-route-stretch="1.0" data-bridges="" d="M 983,256 L 983,334" fill="none" stroke="#7c3aed" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowA)"/>
+  <path id="cooling-accel" data-graph-role="edge" data-edge-id="cooling-accel" data-source="cooling" data-target="accel" data-edge-kind="flow" data-topic-id="" data-flow="control" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="2" data-route-stretch="1.0" data-bridges="" d="M 840,529 L 750,529 L 750,382 L 726,382" fill="none" stroke="#7c3aed" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowA)"/>
+  <g id="node-videoport" data-graph-role="node" data-node-id="videoport" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="74,178,334,256">
+  <rect x="74.0" y="178.0" width="260.0" height="78.0" rx="10.0" fill="#eff6ff" stroke="#2563eb" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="204.0" y="217.0" text-anchor="middle" class="node-title" font-size="17.0">视频输入端口（21）</text>
+  <text x="204.0" y="239.0" text-anchor="middle" class="node-sub">图像与时间戳</text>
+  </g>
+  <g id="node-poseport" data-graph-role="node" data-node-id="poseport" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="74,334,334,412">
+  <rect x="74.0" y="334.0" width="260.0" height="78.0" rx="10.0" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="204.0" y="373.0" text-anchor="middle" class="node-title" font-size="17.0">姿态数据端口（22）</text>
+  <text x="204.0" y="395.0" text-anchor="middle" class="node-sub">双人关键点序列</text>
+  </g>
+  <g id="node-courtport" data-graph-role="node" data-node-id="courtport" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="74,490,334,568">
+  <rect x="74.0" y="490.0" width="260.0" height="78.0" rx="10.0" fill="#fff7ed" stroke="#f97316" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="204.0" y="529.0" text-anchor="middle" class="node-title" font-size="17.0">场地数据端口（23）</text>
+  <text x="204.0" y="551.0" text-anchor="middle" class="node-sub">四点标定和脚点坐标</text>
+  </g>
+  <g id="node-sync" data-graph-role="node" data-node-id="sync" data-semantic-role="double_rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="452,178,726,256">
+  <rect x="452.0" y="178.0" width="274.0" height="78.0" rx="10.0" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2.0" filter="url(#shadowSoft)"/>
+  <rect x="458.0" y="184.0" width="262.0" height="66.0" rx="7.0" fill="none" stroke="#7c3aed" stroke-width="1.2" opacity="0.65"/>
+  <text x="589.0" y="217.0" text-anchor="middle" class="node-title" font-size="17.0">同步与缓存电路（31）</text>
+  <text x="589.0" y="239.0" text-anchor="middle" class="node-sub">时间戳对齐、缺失屏蔽</text>
+  </g>
+  <g id="node-accel" data-graph-role="node" data-node-id="accel" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="452,334,726,412">
+  <rect x="452.0" y="334.0" width="274.0" height="78.0" rx="10.0" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="589.0" y="373.0" text-anchor="middle" class="node-title" font-size="17.0">一维时序卷积电路（334）</text>
+  <text x="589.0" y="395.0" text-anchor="middle" class="node-sub">卷积和注意力计算</text>
+  </g>
+  <g id="node-model" data-graph-role="node" data-node-id="model" data-semantic-role="double_rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="452,490,726,568">
+  <rect x="452.0" y="490.0" width="274.0" height="78.0" rx="10.0" fill="#fff7ed" stroke="#f97316" stroke-width="2.0" filter="url(#shadowSoft)"/>
+  <rect x="458.0" y="496.0" width="262.0" height="66.0" rx="7.0" fill="none" stroke="#f97316" stroke-width="1.2" opacity="0.65"/>
+  <text x="589.0" y="529.0" text-anchor="middle" class="node-title" font-size="17.0">模型存储模块（5）</text>
+  <text x="589.0" y="551.0" text-anchor="middle" class="node-sub">类别表、参数和版本</text>
+  </g>
+  <g id="node-screen" data-graph-role="node" data-node-id="screen" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="840,178,1126,256">
+  <rect x="840.0" y="178.0" width="286.0" height="78.0" rx="10.0" fill="#eff6ff" stroke="#2563eb" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="983.0" y="217.0" text-anchor="middle" class="node-title" font-size="17.0">结果触控屏（4）</text>
+  <text x="983.0" y="239.0" text-anchor="middle" class="node-sub">类别与置信信息</text>
+  </g>
+  <g id="node-indicator" data-graph-role="node" data-node-id="indicator" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="840,334,1126,412">
+  <rect x="840.0" y="334.0" width="286.0" height="78.0" rx="10.0" fill="#fff7ed" stroke="#f97316" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="983.0" y="373.0" text-anchor="middle" class="node-title" font-size="17.0">状态指示灯（7）</text>
+  <text x="983.0" y="395.0" text-anchor="middle" class="node-sub">输入、处理、异常</text>
+  </g>
+  <g id="node-cooling" data-graph-role="node" data-node-id="cooling" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="840,490,1126,568">
+  <rect x="840.0" y="490.0" width="286.0" height="78.0" rx="10.0" fill="#ffffff" stroke="#94a3b8" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="983.0" y="529.0" text-anchor="middle" class="node-title" font-size="17.0">散热与电源组件（8）</text>
+  <text x="983.0" y="551.0" text-anchor="middle" class="node-sub">风道、温度和电池</text>
+  </g>
+  <g id="cooling-accel-label" data-graph-role="label" data-owner="cooling-accel" data-graph-bounds="678.04,441.5,747,461.5">
+  <rect x="678.04" y="441.5" width="68.96000000000001" height="20" rx="6" fill="#ffffff" opacity="0.94"/>
+  <text x="712.52" y="455.5" text-anchor="middle" class="arrow-label">供电/温度</text>
+  </g>
+  <g id="legend" data-graph-role="legend">
+    <rect id="legend-zone" data-graph-role="reserved" data-reserved-kind="legend" x="50" y="676" width="486.88" height="46" rx="10" fill="none" stroke="none"/>
+    <line data-graph-role="decoration" x1="60.0" y1="690.0" x2="90.0" y2="690.0" stroke="#2563eb" stroke-width="2.4" marker-end="url(#arrowC)"/>
+    <text data-graph-role="decoration" x="100.0" y="694.0" class="legend">输入/显示</text>
+    <line data-graph-role="decoration" x1="182.96" y1="690.0" x2="212.96" y2="690.0" stroke="#f97316" stroke-width="2.4" marker-end="url(#arrowE)"/>
+    <text data-graph-role="decoration" x="222.96" y="694.0" class="legend">姿态/位置</text>
+    <line data-graph-role="decoration" x1="305.92" y1="690.0" x2="335.92" y2="690.0" stroke="#10b981" stroke-width="2.4" marker-end="url(#arrowB)"/>
+    <text data-graph-role="decoration" x="345.92" y="694.0" class="legend">模型存储</text>
+    <line data-graph-role="decoration" x1="421.92" y1="690.0" x2="451.92" y2="690.0" stroke="#7c3aed" stroke-width="2.4" marker-end="url(#arrowA)"/>
+    <text data-graph-role="decoration" x="461.92" y="694.0" class="legend">同步/控制</text>
+  </g>
+  <g id="footer" data-graph-role="reserved" data-graph-bounds="1018,732,1158,748">
+  <text x="1018.0" y="744.0" class="footnote">图2  联合时序识别装置的模块安装结构</text>
+  </g>
+</svg>

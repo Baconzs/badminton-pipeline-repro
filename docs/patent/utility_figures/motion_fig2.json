@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "mode": "architecture",
+  "style": 1,
+  "quality_profile": "standard",
+  "width": 1200,
+  "height": 760,
+  "title": "图2  动作证据反馈装置的安装与连接结构",
+  "subtitle": "可调摄像头支架、计算主机、显示组件和外部接口",
+  "style_overrides": {"font_family": "'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif"},
+  "containers": [
+    {"id":"mount","x":36,"y":112,"width":340,"height":500,"label":"可调式采集支架（5）","subtitle":"面向球场的稳定安装"},
+    {"id":"host","x":414,"y":112,"width":350,"height":500,"label":"计算主机（3）","subtitle":"处理、存储与供电"},
+    {"id":"panel","x":802,"y":112,"width":362,"height":500,"label":"装置底座（1）与显示组件（4）","subtitle":"显示、确认与导出"}
+  ],
+  "nodes":[
+    {"id":"base","kind":"rect","x":74,"y":188,"width":260,"height":78,"label":"带锁脚轮底座（51）","sublabel":"装置底座（1）的一部分","fill":"#ffffff","stroke":"#94a3b8","title_size":17},
+    {"id":"pole","kind":"rect","x":74,"y":340,"width":260,"height":78,"label":"伸缩立杆（52）","sublabel":"与万向云台（53）连接","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"camera","kind":"double_rect","x":74,"y":492,"width":260,"height":78,"label":"视频采集头（2）","sublabel":"镜头、补光与同步端口","fill":"#f5f3ff","stroke":"#7c3aed","title_size":17},
+    {"id":"board","kind":"rect","x":452,"y":188,"width":274,"height":78,"label":"视频输入板（31）","sublabel":"接收连续帧和时间戳","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"accelerator","kind":"rect","x":452,"y":340,"width":274,"height":78,"label":"图形加速电路（321）","sublabel":"并行处理姿态与球路","fill":"#f0fdf4","stroke":"#16a34a","title_size":17},
+    {"id":"memory","kind":"double_rect","x":452,"y":492,"width":274,"height":78,"label":"非易失性存储器（342）","sublabel":"保存模型、旁路数据和任务","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"screen","kind":"rect","x":840,"y":188,"width":286,"height":78,"label":"显示组件（4）","sublabel":"训练卡片与复看画面","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"ports","kind":"rect","x":840,"y":340,"width":286,"height":78,"label":"网络通信组件（8）","sublabel":"网口、通用串行口、音频口","fill":"#ffffff","stroke":"#94a3b8","title_size":17},
+    {"id":"power","kind":"rect","x":840,"y":492,"width":286,"height":78,"label":"电源散热组件（10）","sublabel":"电池、风道和温度检测","fill":"#fff7ed","stroke":"#f97316","title_size":17}
+  ],
+  "arrows":[
+    {"id":"base-pole","source":"base","target":"pole","source_port":"bottom","target_port":"top","flow":"control"},
+    {"id":"pole-camera","source":"pole","target":"camera","source_port":"bottom","target_port":"top","flow":"control"},
+    {"id":"camera-board","source":"camera","target":"board","source_port":"right","target_port":"left","flow":"read"},
+    {"id":"board-accelerator","source":"board","target":"accelerator","source_port":"bottom","target_port":"top","flow":"data"},
+    {"id":"accelerator-memory","source":"accelerator","target":"memory","source_port":"bottom","target_port":"top","flow":"write","label":"模型与证据"},
+    {"id":"accelerator-screen","source":"accelerator","target":"screen","source_port":"right","target_port":"left","flow":"read","label":"反馈画面"},
+    {"id":"screen-ports","source":"screen","target":"ports","source_port":"bottom","target_port":"top","flow":"control"},
+    {"id":"power-accelerator","source":"power","target":"accelerator","source_port":"left","target_port":"right","flow":"control","label":"供电/温度"}
+  ],
+  "legend_orientation":"horizontal","legend_x":60,"legend_y":690,"legend_locked":true,
+  "legend":[{"flow":"read","label":"采集/显示"},{"flow":"data","label":"处理链路"},{"flow":"write","label":"存储"},{"flow":"control","label":"机械/控制连接"}],
+  "footer":"图2  动作证据反馈装置的安装与连接结构","footer_position":"bottom-right"
+}
