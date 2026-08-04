@@ -1,0 +1,34 @@
+{
+  "schema_version":1,"mode":"architecture","style":1,"quality_profile":"standard","width":1200,"height":760,
+  "title":"图1  骨骼与球路联合时序识别装置总体结构","subtitle":"双人姿态、羽球轨迹和场地位置的同步融合",
+  "style_overrides":{"font_family":"'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif"},
+  "containers":[
+    {"id":"input","x":36,"y":112,"width":310,"height":500,"label":"采集接口板（2）","subtitle":"同步视频与场地信息"},
+    {"id":"fusion","x":382,"y":112,"width":438,"height":500,"label":"联合处理板（3）","subtitle":"姿态、球路和双人交互融合"},
+    {"id":"result","x":856,"y":112,"width":308,"height":500,"label":"结果触控屏（4）","subtitle":"类别、置信度和覆盖率"}
+  ],
+  "nodes":[
+    {"id":"video","kind":"rect","x":72,"y":178,"width":238,"height":76,"label":"视频输入端口（21）","sublabel":"连续帧与时间戳","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"pose","kind":"rect","x":72,"y":334,"width":238,"height":76,"label":"姿态数据端口（22）","sublabel":"关节与骨骼差分","fill":"#f0fdf4","stroke":"#16a34a","title_size":17},
+    {"id":"court","kind":"rect","x":72,"y":490,"width":238,"height":76,"label":"场地数据端口（23）","sublabel":"脚点投影与归一化","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"pre","kind":"double_rect","x":432,"y":178,"width":338,"height":76,"label":"时序预处理单元（32）","sublabel":"人体框、球点和有效长度","fill":"#f5f3ff","stroke":"#7c3aed","title_size":17},
+    {"id":"temporal","kind":"rect","x":432,"y":334,"width":338,"height":76,"label":"三路时间编码单元（33）","sublabel":"双方姿态 · 羽球轨迹 · 场地位置","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"cross","kind":"hexagon","x":432,"y":490,"width":338,"height":76,"label":"跨模态关联单元（34）","sublabel":"球员与羽球的逐时刻关联","fill":"#faf5ff","stroke":"#7c3aed","title_size":17},
+    {"id":"class","kind":"double_rect","x":906,"y":178,"width":208,"height":76,"label":"分类输出单元（36）","sublabel":"击球类型候选","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"gate","kind":"hexagon","x":906,"y":334,"width":208,"height":76,"label":"置信门控单元（37）","sublabel":"覆盖率与区分度","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"panel","kind":"rect","x":906,"y":490,"width":208,"height":76,"label":"结果触控屏（4）","sublabel":"前三候选与依据","fill":"#f0fdf4","stroke":"#16a34a","title_size":17}
+  ],
+  "arrows":[
+    {"id":"video-pre","source":"video","target":"pre","source_port":"right","target_port":"left","flow":"read"},
+    {"id":"pose-pre","source":"pose","target":"pre","source_port":"right","target_port":"left","flow":"data","label":"关节"},
+    {"id":"court-pre","source":"court","target":"pre","source_port":"right","target_port":"left","flow":"data","label":"位置"},
+    {"id":"pre-temporal","source":"pre","target":"temporal","source_port":"bottom","target_port":"top","flow":"control"},
+    {"id":"temporal-cross","source":"temporal","target":"cross","source_port":"bottom","target_port":"top","flow":"data"},
+    {"id":"cross-class","source":"cross","target":"class","source_port":"right","target_port":"left","flow":"data","label":"融合表示"},
+    {"id":"class-gate","source":"class","target":"gate","source_port":"bottom","target_port":"top","flow":"control"},
+    {"id":"gate-panel","source":"gate","target":"panel","source_port":"bottom","target_port":"top","flow":"read","label":"可靠结果"}
+  ],
+  "legend_orientation":"horizontal","legend_x":60,"legend_y":690,"legend_locked":true,
+  "legend":[{"flow":"read","label":"视频/结果"},{"flow":"data","label":"特征数据"},{"flow":"control","label":"控制门控"}],
+  "footer":"图1  骨骼与球路联合时序识别装置总体结构","footer_position":"bottom-right"
+}

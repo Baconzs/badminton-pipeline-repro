@@ -31,7 +31,8 @@ class Shuttlecock_Trajectory_Dataset(Dataset):
         HEIGHT=HEIGHT,
         WIDTH=WIDTH,
         SIGMA=SIGMA,
-        median=None
+        median=None,
+        start_offset=0
     ):
         """ Initialize the dataset
 
@@ -66,6 +67,7 @@ class Shuttlecock_Trajectory_Dataset(Dataset):
                 WIDTH (int): Width of the image for input.
                 SIGMA (int): Sigma of the Gaussian heatmap which control the label size.
                 median (numpy.ndarray): Median image
+                start_offset (int): First source frame used for inference windows.
         """
 
         assert split in ['train', 'test', 'val'], f'Invalid split: {split}, should be train, test or val'
@@ -87,6 +89,9 @@ class Shuttlecock_Trajectory_Dataset(Dataset):
         self.data_mode = data_mode
         self.bg_mode = bg_mode
         self.frame_alpha = frame_alpha
+        self.start_offset = int(start_offset)
+        if self.start_offset < 0:
+            raise ValueError(f'start_offset must be non-negative, got {start_offset}')
 
         # Data for inference
         self.frame_arr = frame_arr
@@ -335,7 +340,7 @@ class Shuttlecock_Trajectory_Dataset(Dataset):
 
         id = np.array([], dtype=np.int32).reshape(0, self.seq_len, 2)
         last_idx = -1
-        for i in range(0, len(self.frame_arr), self.sliding_step):
+        for i in range(self.start_offset, len(self.frame_arr), self.sliding_step):
             tmp_idx = []
             # Construct a single input sequence
             for f in range(self.seq_len):
@@ -677,7 +682,8 @@ class Video_IterableDataset(IterableDataset):
         WIDTH=WIDTH,
         max_sample_num=1800,
         video_range=None,
-        median=None
+        median=None,
+        start_offset=0
     ):
         """ Initialize the dataset
             Args:
@@ -695,6 +701,7 @@ class Video_IterableDataset(IterableDataset):
                 max_sample_num (int): Maximum number of frames to sample for generating median image.
                 video_range (Tuple[int]): Range of start second and end second of the video for generating median image.
                 median (np.ndarray): Median image.
+                start_offset (int): First source frame used for inference windows.
         """
         # Image size
         self.HEIGHT = HEIGHT
@@ -711,14 +718,17 @@ class Video_IterableDataset(IterableDataset):
         self.seq_len = seq_len
         self.sliding_step = sliding_step
         self.bg_mode = bg_mode
+        self.start_offset = int(start_offset)
+        if self.start_offset < 0:
+            raise ValueError(f'start_offset must be non-negative, got {start_offset}')
         if self.bg_mode:
             self.median = median if median is not None else self.__gen_median__(max_sample_num, video_range)
 
     def __iter__(self):
         """ Return the data squentially. """
-        self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.start_offset)
         success = True
-        start_f_id, end_f_id = 0, 0
+        start_f_id = end_f_id = self.start_offset
         frame_list = []
         while success:
             # Sample frames

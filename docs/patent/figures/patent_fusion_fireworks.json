@@ -1,0 +1,295 @@
+{
+  "schema_version": 1,
+  "mode": "architecture",
+  "template_type": "architecture",
+  "style": 1,
+  "quality_profile": "showcase",
+  "width": 1200,
+  "height": 1060,
+  "title": "多时间相位球轨迹融合与击球事件门控",
+  "subtitle": "相位一致性 · 冲突段双侧锚点 · 真实来源隔离",
+  "style_overrides": {
+    "font_family": "'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif"
+  },
+  "containers": [
+    {
+      "id": "phase_detection",
+      "x": 36,
+      "y": 106,
+      "width": 1128,
+      "height": 150,
+      "label": "01  多时间相位检测",
+      "subtitle": "同一帧由不同连续窗口获得候选位置和响应置信度"
+    },
+    {
+      "id": "fusion_gate",
+      "x": 36,
+      "y": 278,
+      "width": 1128,
+      "height": 360,
+      "label": "02  相位一致性与冲突段融合",
+      "subtitle": "双侧共同真实锚点支持；缺少支持时保持不可见"
+    },
+    {
+      "id": "event_gate",
+      "x": 36,
+      "y": 660,
+      "width": 1128,
+      "height": 334,
+      "label": "03  来源隔离与击球事件门控",
+      "subtitle": "派生点可用于渲染，但不得单独确认击球"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "phase_a",
+      "kind": "rect",
+      "x": 70,
+      "y": 164,
+      "width": 220,
+      "height": 62,
+      "label": "时间相位 A",
+      "sublabel": "窗口 [k … k+N−1]",
+      "fill": "#eff6ff",
+      "stroke": "#2563eb",
+      "title_size": 16
+    },
+    {
+      "id": "phase_b",
+      "kind": "rect",
+      "x": 330,
+      "y": 164,
+      "width": 220,
+      "height": 62,
+      "label": "时间相位 B",
+      "sublabel": "窗口起点 k+Δ",
+      "fill": "#fff7ed",
+      "stroke": "#f97316",
+      "title_size": 16
+    },
+    {
+      "id": "frame_candidates",
+      "kind": "double_rect",
+      "x": 590,
+      "y": 164,
+      "width": 300,
+      "height": 62,
+      "label": "逐帧候选集合",
+      "sublabel": "位置 · 可见性 · 响应置信度",
+      "fill": "#f5f3ff",
+      "stroke": "#7c3aed",
+      "title_size": 16
+    },
+    {
+      "id": "edge_context",
+      "kind": "rect",
+      "x": 930,
+      "y": 164,
+      "width": 200,
+      "height": 62,
+      "label": "边缘标记",
+      "sublabel": "仅作飞行上下文",
+      "fill": "#ffffff",
+      "stroke": "#94a3b8",
+      "title_size": 15
+    },
+    {
+      "id": "consistency",
+      "kind": "hexagon",
+      "x": 490,
+      "y": 340,
+      "width": 300,
+      "height": 64,
+      "label": "逐帧一致性",
+      "sublabel": "候选距离 < 阈值 → 合并",
+      "fill": "#f0fdf4",
+      "stroke": "#16a34a",
+      "title_size": 16
+    },
+    {
+      "id": "conflict_segment",
+      "kind": "hexagon",
+      "x": 490,
+      "y": 444,
+      "width": 300,
+      "height": 64,
+      "label": "连续冲突段",
+      "sublabel": "查找前后共同真实锚点",
+      "fill": "#fff7ed",
+      "stroke": "#f97316",
+      "title_size": 16
+    },
+    {
+      "id": "residual_select",
+      "kind": "rect",
+      "x": 490,
+      "y": 548,
+      "width": 300,
+      "height": 64,
+      "label": "桥接残差选择",
+      "sublabel": "差异显著 → 保留较小分支",
+      "fill": "#f5f3ff",
+      "stroke": "#7c3aed",
+      "title_size": 16
+    },
+    {
+      "id": "missing",
+      "kind": "rect",
+      "x": 850,
+      "y": 444,
+      "width": 280,
+      "height": 64,
+      "label": "保持 MISSING",
+      "sublabel": "无双侧支持，不强行补点",
+      "fill": "#fef2f2",
+      "stroke": "#dc2626",
+      "title_size": 16
+    },
+    {
+      "id": "trajectory_record",
+      "kind": "double_rect",
+      "x": 490,
+      "y": 684,
+      "width": 300,
+      "height": 64,
+      "label": "融合轨迹序列",
+      "sublabel": "REAL · EDGE · DERIVED · MISSING",
+      "fill": "#f0fdf4",
+      "stroke": "#16a34a",
+      "title_size": 16
+    },
+    {
+      "id": "event_evidence",
+      "kind": "rect",
+      "x": 490,
+      "y": 788,
+      "width": 300,
+      "height": 64,
+      "label": "击球候选证据",
+      "sublabel": "速度 · 方向 · 姿态 · 可选音频",
+      "fill": "#fff7ed",
+      "stroke": "#f97316",
+      "title_size": 16
+    },
+    {
+      "id": "hit_gate",
+      "kind": "hexagon",
+      "x": 490,
+      "y": 892,
+      "width": 300,
+      "height": 64,
+      "label": "击球事件门控",
+      "sublabel": "双侧真实球点 + 接触约束",
+      "fill": "#faf5ff",
+      "stroke": "#7c3aed",
+      "title_size": 16
+    },
+    {
+      "id": "event_result",
+      "kind": "rect",
+      "x": 850,
+      "y": 892,
+      "width": 280,
+      "height": 64,
+      "label": "Hit / 拒绝",
+      "sublabel": "可审计事件",
+      "fill": "#eff6ff",
+      "stroke": "#2563eb",
+      "title_size": 16
+    }
+  ],
+  "arrows": [
+    {
+      "id": "phase-a-phase-b",
+      "source": "phase_a",
+      "target": "phase_b",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "control"
+    },
+    {
+      "id": "phase-b-candidates",
+      "source": "phase_b",
+      "target": "frame_candidates",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "write"
+    },
+    {
+      "id": "candidates-consistency",
+      "source": "frame_candidates",
+      "target": "consistency",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "data"
+    },
+    {
+      "id": "consistency-conflict",
+      "source": "consistency",
+      "target": "conflict_segment",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "control"
+    },
+    {
+      "id": "conflict-residual",
+      "source": "conflict_segment",
+      "target": "residual_select",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "data"
+    },
+    {
+      "id": "conflict-missing",
+      "source": "conflict_segment",
+      "target": "missing",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "feedback"
+    },
+    {
+      "id": "residual-trajectory",
+      "source": "residual_select",
+      "target": "trajectory_record",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "write"
+    },
+    {
+      "id": "trajectory-evidence",
+      "source": "trajectory_record",
+      "target": "event_evidence",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "data"
+    },
+    {
+      "id": "evidence-hit",
+      "source": "event_evidence",
+      "target": "hit_gate",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "control"
+    },
+    {
+      "id": "hit-result",
+      "source": "hit_gate",
+      "target": "event_result",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "read"
+    }
+  ],
+  "legend_orientation": "horizontal",
+  "legend_x": 46,
+  "legend_y": 1010,
+  "legend_locked": false,
+  "legend": [
+    {"flow": "data", "label": "候选 / 真实轨迹"},
+    {"flow": "write", "label": "来源记录 / 派生"},
+    {"flow": "control", "label": "融合与门控"},
+    {"flow": "feedback", "label": "拒绝分支"},
+    {"flow": "read", "label": "确认事件"}
+  ],
+  "footer": "图4  多相位候选融合、来源隔离与击球确认"
+}

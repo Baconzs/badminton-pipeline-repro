@@ -1,0 +1,3 @@
+[submodule "third_party/BST-Badminton-Stroke-type-Transformer"]
+	path = third_party/BST-Badminton-Stroke-type-Transformer
+	url = https://github.com/Va6lue/BST-Badminton-Stroke-type-Transformer.git

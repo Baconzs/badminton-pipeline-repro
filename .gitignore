@@ -18,6 +18,7 @@ venv/
 
 # Runtime outputs
 yumaoqiu_repro/
+runtime/web_ui/
 
 # Temporary debugging artifacts
 court_*.png
@@ -33,3 +34,6 @@ panel_preview.png
 
 # Logs
 *.log
+*.mp4
+
+demo/

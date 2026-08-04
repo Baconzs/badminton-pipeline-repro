@@ -1,0 +1,372 @@
+{
+  "canvas": {
+    "height": 1060.0,
+    "width": 1200.0
+  },
+  "composition": {
+    "limits": {
+      "max_bends_per_edge": 2,
+      "max_bridged_crossings": 0,
+      "max_route_stretch": 1.35,
+      "max_total_bends": 8,
+      "min_container_gutter": 20.0,
+      "min_label_clearance": 4.0,
+      "min_node_gap": 40.0,
+      "min_segment_length": 16.0,
+      "profile": "showcase"
+    },
+    "metrics": {
+      "bridged_crossings": 0,
+      "max_route_stretch": 1.0,
+      "minimum_container_gutter": 24.0,
+      "minimum_node_gap": 40.0,
+      "shortest_segment": 20.4,
+      "total_bends": 2
+    },
+    "ok": true,
+    "profile": "showcase",
+    "score": 100,
+    "violations": []
+  },
+  "edges": [
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "phase-a-phase-b",
+      "length": 40.0,
+      "route": [
+        [
+          290.0,
+          195.0
+        ],
+        [
+          330.0,
+          195.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "phase_a",
+      "source_port": [
+        290.0,
+        195.0
+      ],
+      "target": "phase_b",
+      "target_port": [
+        330.0,
+        195.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "phase-b-candidates",
+      "length": 40.0,
+      "route": [
+        [
+          550.0,
+          195.0
+        ],
+        [
+          590.0,
+          195.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "phase_b",
+      "source_port": [
+        550.0,
+        195.0
+      ],
+      "target": "frame_candidates",
+      "target_port": [
+        590.0,
+        195.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 2,
+      "bridges": [],
+      "crossings": [],
+      "id": "candidates-consistency",
+      "length": 214.0,
+      "route": [
+        [
+          740.0,
+          226.0
+        ],
+        [
+          740.0,
+          246.4
+        ],
+        [
+          640.0,
+          246.4
+        ],
+        [
+          640.0,
+          340.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "frame_candidates",
+      "source_port": [
+        740.0,
+        226.0
+      ],
+      "target": "consistency",
+      "target_port": [
+        640.0,
+        340.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "consistency-conflict",
+      "length": 40.0,
+      "route": [
+        [
+          640.0,
+          404.0
+        ],
+        [
+          640.0,
+          444.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "consistency",
+      "source_port": [
+        640.0,
+        404.0
+      ],
+      "target": "conflict_segment",
+      "target_port": [
+        640.0,
+        444.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "conflict-residual",
+      "length": 40.0,
+      "route": [
+        [
+          640.0,
+          508.0
+        ],
+        [
+          640.0,
+          548.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "conflict_segment",
+      "source_port": [
+        640.0,
+        508.0
+      ],
+      "target": "residual_select",
+      "target_port": [
+        640.0,
+        548.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "conflict-missing",
+      "length": 60.0,
+      "route": [
+        [
+          790.0,
+          476.0
+        ],
+        [
+          850.0,
+          476.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "conflict_segment",
+      "source_port": [
+        790.0,
+        476.0
+      ],
+      "target": "missing",
+      "target_port": [
+        850.0,
+        476.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "residual-trajectory",
+      "length": 72.0,
+      "route": [
+        [
+          640.0,
+          612.0
+        ],
+        [
+          640.0,
+          684.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "residual_select",
+      "source_port": [
+        640.0,
+        612.0
+      ],
+      "target": "trajectory_record",
+      "target_port": [
+        640.0,
+        684.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "trajectory-evidence",
+      "length": 40.0,
+      "route": [
+        [
+          640.0,
+          748.0
+        ],
+        [
+          640.0,
+          788.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "trajectory_record",
+      "source_port": [
+        640.0,
+        748.0
+      ],
+      "target": "event_evidence",
+      "target_port": [
+        640.0,
+        788.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "evidence-hit",
+      "length": 40.0,
+      "route": [
+        [
+          640.0,
+          852.0
+        ],
+        [
+          640.0,
+          892.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "event_evidence",
+      "source_port": [
+        640.0,
+        852.0
+      ],
+      "target": "hit_gate",
+      "target_port": [
+        640.0,
+        892.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "hit-result",
+      "length": 60.0,
+      "route": [
+        [
+          790.0,
+          924.0
+        ],
+        [
+          850.0,
+          924.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "hit_gate",
+      "source_port": [
+        790.0,
+        924.0
+      ],
+      "target": "event_result",
+      "target_port": [
+        850.0,
+        924.0
+      ],
+      "waypoints": []
+    }
+  ],
+  "input_schema": "v1",
+  "issues": [],
+  "mode": "architecture",
+  "ok": true,
+  "placements": {
+    "legend": {
+      "actual": [
+        42.0,
+        994.0
+      ],
+      "bounds": [
+        32.0,
+        980.0,
+        705.2,
+        1026.0
+      ],
+      "moved": true,
+      "requested": [
+        46.0,
+        1010.0
+      ]
+    }
+  },
+  "schema_version": 1,
+  "semantics": {
+    "details": {},
+    "ok": true,
+    "profile": "generic",
+    "style": 1,
+    "visual_theme": "Flat Icon"
+  },
+  "style": {
+    "id": 1,
+    "name": "Flat Icon"
+  },
+  "summary": {
+    "bridged_crossings": 0,
+    "edges": 10,
+    "nodes": 12
+  },
+  "text_metrics": "heuristic-v1"
+}

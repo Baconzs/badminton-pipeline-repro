@@ -1,0 +1,409 @@
+{
+  "canvas": {
+    "height": 1350.0,
+    "width": 1400.0
+  },
+  "composition": {
+    "limits": {
+      "max_bends_per_edge": 2,
+      "max_bridged_crossings": 0,
+      "max_route_stretch": 1.35,
+      "max_total_bends": 8,
+      "min_container_gutter": 20.0,
+      "min_label_clearance": 4.0,
+      "min_node_gap": 40.0,
+      "min_segment_length": 16.0,
+      "profile": "showcase"
+    },
+    "metrics": {
+      "bridged_crossings": 0,
+      "max_route_stretch": 1.0,
+      "minimum_container_gutter": null,
+      "minimum_node_gap": 64.0,
+      "shortest_segment": 64.0,
+      "total_bends": 4
+    },
+    "ok": true,
+    "profile": "showcase",
+    "score": 100,
+    "violations": []
+  },
+  "edges": [
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "phase-pose",
+      "length": 68.0,
+      "route": [
+        [
+          700.0,
+          202.0
+        ],
+        [
+          700.0,
+          270.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "phase_window",
+      "source_port": [
+        700.0,
+        202.0
+      ],
+      "target": "pose_evidence",
+      "target_port": [
+        700.0,
+        270.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "pose-ball",
+      "length": 68.0,
+      "route": [
+        [
+          700.0,
+          352.0
+        ],
+        [
+          700.0,
+          420.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "pose_evidence",
+      "source_port": [
+        700.0,
+        352.0
+      ],
+      "target": "ball_bst",
+      "target_port": [
+        700.0,
+        420.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "ball-side",
+      "length": 68.0,
+      "route": [
+        [
+          700.0,
+          502.0
+        ],
+        [
+          700.0,
+          570.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "ball_bst",
+      "source_port": [
+        700.0,
+        502.0
+      ],
+      "target": "side_evidence",
+      "target_port": [
+        700.0,
+        570.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "side-gate",
+      "length": 68.0,
+      "route": [
+        [
+          700.0,
+          652.0
+        ],
+        [
+          700.0,
+          720.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "side_evidence",
+      "source_port": [
+        700.0,
+        652.0
+      ],
+      "target": "gate",
+      "target_port": [
+        700.0,
+        720.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 1,
+      "bridges": [],
+      "crossings": [],
+      "id": "gate-hit1",
+      "length": 208.0,
+      "route": [
+        [
+          350.0,
+          812.0
+        ],
+        [
+          210.0,
+          812.0
+        ],
+        [
+          210.0,
+          880.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "gate",
+      "source_port": [
+        350.0,
+        812.0
+      ],
+      "target": "hit1",
+      "target_port": [
+        210.0,
+        880.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "gate-hit2",
+      "length": 68.0,
+      "route": [
+        [
+          700.0,
+          812.0
+        ],
+        [
+          700.0,
+          880.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "gate",
+      "source_port": [
+        700.0,
+        812.0
+      ],
+      "target": "hit2",
+      "target_port": [
+        700.0,
+        880.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 1,
+      "bridges": [],
+      "crossings": [],
+      "id": "gate-hit3",
+      "length": 208.0,
+      "route": [
+        [
+          1050.0,
+          812.0
+        ],
+        [
+          1190.0,
+          812.0
+        ],
+        [
+          1190.0,
+          880.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "gate",
+      "source_port": [
+        1050.0,
+        812.0
+      ],
+      "target": "hit3",
+      "target_port": [
+        1190.0,
+        880.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 1,
+      "bridges": [],
+      "crossings": [],
+      "id": "hit1-aggregate",
+      "length": 208.0,
+      "route": [
+        [
+          210.0,
+          962.0
+        ],
+        [
+          210.0,
+          1030.0
+        ],
+        [
+          350.0,
+          1030.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "hit1",
+      "source_port": [
+        210.0,
+        962.0
+      ],
+      "target": "aggregate",
+      "target_port": [
+        350.0,
+        1030.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "hit2-aggregate",
+      "length": 68.0,
+      "route": [
+        [
+          700.0,
+          962.0
+        ],
+        [
+          700.0,
+          1030.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "hit2",
+      "source_port": [
+        700.0,
+        962.0
+      ],
+      "target": "aggregate",
+      "target_port": [
+        700.0,
+        1030.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 1,
+      "bridges": [],
+      "crossings": [],
+      "id": "hit3-aggregate",
+      "length": 208.0,
+      "route": [
+        [
+          1190.0,
+          962.0
+        ],
+        [
+          1190.0,
+          1030.0
+        ],
+        [
+          1050.0,
+          1030.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "hit3",
+      "source_port": [
+        1190.0,
+        962.0
+      ],
+      "target": "aggregate",
+      "target_port": [
+        1050.0,
+        1030.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "aggregate-suggestion",
+      "length": 64.0,
+      "route": [
+        [
+          700.0,
+          1116.0
+        ],
+        [
+          700.0,
+          1180.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "aggregate",
+      "source_port": [
+        700.0,
+        1116.0
+      ],
+      "target": "suggestion",
+      "target_port": [
+        700.0,
+        1180.0
+      ],
+      "waypoints": []
+    }
+  ],
+  "input_schema": "v1",
+  "issues": [],
+  "mode": "flowchart",
+  "ok": true,
+  "placements": {
+    "legend": {
+      "actual": [
+        70.0,
+        1290.0
+      ],
+      "bounds": [
+        60.0,
+        1276.0,
+        562.48,
+        1322.0
+      ],
+      "moved": false,
+      "requested": [
+        70.0,
+        1290.0
+      ]
+    }
+  },
+  "schema_version": 1,
+  "semantics": {
+    "details": {},
+    "ok": true,
+    "profile": "generic",
+    "style": 1,
+    "visual_theme": "Flat Icon"
+  },
+  "style": {
+    "id": 1,
+    "name": "Flat Icon"
+  },
+  "summary": {
+    "bridged_crossings": 0,
+    "edges": 11,
+    "nodes": 10
+  },
+  "text_metrics": "heuristic-v1"
+}

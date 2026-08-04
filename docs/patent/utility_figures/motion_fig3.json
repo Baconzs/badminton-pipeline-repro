@@ -1,0 +1,26 @@
+{
+  "schema_version":1,"mode":"flowchart","style":1,"quality_profile":"standard","width":1000,"height":1180,
+  "title":"图3  多拍动作证据聚合结构","subtitle":"从确认击球到可靠训练反馈的分级连接关系",
+  "style_overrides":{"font_family":"'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif"},
+  "containers":[],
+  "nodes":[
+    {"id":"hit","kind":"rect","x":250,"y":110,"width":500,"height":76,"label":"击球事件门控单元（33）","sublabel":"帧号、球员侧别、真实球点","fill":"#eff6ff","stroke":"#2563eb","title_size":18},
+    {"id":"window","kind":"rect","x":250,"y":260,"width":500,"height":76,"label":"姿态特征提取单元（32）","sublabel":"准备 · 触球 · 恢复","fill":"#f0fdf4","stroke":"#16a34a","title_size":18},
+    {"id":"metrics","kind":"double_rect","x":250,"y":410,"width":500,"height":76,"label":"尺度归一化电路（323）","sublabel":"腕部伸展、肘膝角、支撑宽度、恢复时序","fill":"#f5f3ff","stroke":"#7c3aed","title_size":17},
+    {"id":"gate","kind":"hexagon","x":250,"y":560,"width":500,"height":82,"label":"门控输出端（334）","sublabel":"姿态覆盖、球点数量、类型一致性达标","fill":"#fff7ed","stroke":"#f97316","title_size":18},
+    {"id":"buffer","kind":"double_rect","x":250,"y":720,"width":500,"height":76,"label":"多拍证据缓冲单元（34）","sublabel":"按球员、回合和击球序号保存","fill":"#ffffff","stroke":"#94a3b8","title_size":18},
+    {"id":"repeat","kind":"hexagon","x":250,"y":880,"width":500,"height":82,"label":"重复次数计数器（352）","sublabel":"同一问题在至少三次独立击球中出现","fill":"#faf5ff","stroke":"#7c3aed","title_size":18},
+    {"id":"output","kind":"rect","x":250,"y":1040,"width":500,"height":76,"label":"反馈生成单元（35）","sublabel":"问题 + 一条训练动作 + 证据时间码","fill":"#eff6ff","stroke":"#2563eb","title_size":18}
+  ],
+  "arrows":[
+    {"id":"hit-window","source":"hit","target":"window","source_port":"bottom","target_port":"top","flow":"control"},
+    {"id":"window-metrics","source":"window","target":"metrics","source_port":"bottom","target_port":"top","flow":"data"},
+    {"id":"metrics-gate","source":"metrics","target":"gate","source_port":"bottom","target_port":"top","flow":"data"},
+    {"id":"gate-buffer","source":"gate","target":"buffer","source_port":"bottom","target_port":"top","flow":"write"},
+    {"id":"buffer-repeat","source":"buffer","target":"repeat","source_port":"bottom","target_port":"top","flow":"read"},
+    {"id":"repeat-output","source":"repeat","target":"output","source_port":"bottom","target_port":"top","flow":"control"}
+  ],
+  "legend_orientation":"horizontal","legend_x":80,"legend_y":1140,"legend_locked":true,
+  "legend":[{"flow":"control","label":"门控/判断"},{"flow":"data","label":"姿态证据"},{"flow":"write","label":"写入缓冲"},{"flow":"read","label":"聚合读取"}],
+  "footer":"图3  多拍动作证据聚合结构","footer_position":"bottom-right"
+}

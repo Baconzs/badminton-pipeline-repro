@@ -1,0 +1,34 @@
+{
+  "schema_version":1,"mode":"architecture","style":1,"quality_profile":"standard","width":1200,"height":760,
+  "title":"图4  动作反馈显示与证据复看结构","subtitle":"同一训练反馈卡片关联原视频、指标和帧级证据",
+  "style_overrides":{"font_family":"'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif"},
+  "containers":[
+    {"id":"source","x":36,"y":112,"width":310,"height":500,"label":"证据来源（34、41、43）","subtitle":"原视频和结构化记录"},
+    {"id":"panel","x":382,"y":112,"width":438,"height":500,"label":"显示组件（4）","subtitle":"面向训练人员的固定字段"},
+    {"id":"review","x":856,"y":112,"width":308,"height":500,"label":"复看与导出（7、9）","subtitle":"定位问题并保存结果"}
+  ],
+  "nodes":[
+    {"id":"video","kind":"rect","x":72,"y":190,"width":238,"height":78,"label":"原视频窗口（41）","sublabel":"击球前后片段","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"sidecar","kind":"double_rect","x":72,"y":342,"width":238,"height":78,"label":"多拍证据缓冲单元（34）","sublabel":"帧号、来源、置信度","fill":"#f0fdf4","stroke":"#16a34a","title_size":17},
+    {"id":"time","kind":"rect","x":72,"y":494,"width":238,"height":78,"label":"证据时间码栏（43）","sublabel":"回合与击球序号","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"problem","kind":"double_rect","x":432,"y":190,"width":338,"height":78,"label":"训练反馈卡片（42）","sublabel":"问题字段：重复出现的二维信号","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"drill","kind":"rect","x":432,"y":342,"width":338,"height":78,"label":"训练反馈卡片（42）","sublabel":"训练动作字段：一条可直接练习的提示","fill":"#f0fdf4","stroke":"#16a34a","title_size":17},
+    {"id":"evidence","kind":"rect","x":432,"y":494,"width":338,"height":78,"label":"证据时间码栏（43）","sublabel":"最多若干时间码和重复次数","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"replay","kind":"rect","x":906,"y":190,"width":208,"height":78,"label":"显示组件（4）","sublabel":"点击卡片跳转视频","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"export","kind":"rect","x":906,"y":342,"width":208,"height":78,"label":"可拆卸存储组件（9）","sublabel":"视频与旁路数据","fill":"#ffffff","stroke":"#94a3b8","title_size":17},
+    {"id":"status","kind":"rect","x":906,"y":494,"width":208,"height":78,"label":"声光提示单元（7）","sublabel":"可靠 / 证据不足","fill":"#fff7ed","stroke":"#f97316","title_size":17}
+  ],
+  "arrows":[
+    {"id":"video-problem","source":"video","target":"problem","source_port":"right","target_port":"left","flow":"read","label":"画面"},
+    {"id":"sidecar-evidence","source":"sidecar","target":"evidence","source_port":"right","target_port":"left","flow":"read","label":"证据"},
+    {"id":"time-evidence","source":"time","target":"evidence","source_port":"right","target_port":"left","flow":"data","label":"时间码"},
+    {"id":"problem-drill","source":"problem","target":"drill","source_port":"bottom","target_port":"top","flow":"control"},
+    {"id":"drill-evidence","source":"drill","target":"evidence","source_port":"bottom","target_port":"top","flow":"data"},
+    {"id":"problem-replay","source":"problem","target":"replay","source_port":"right","target_port":"left","flow":"read"},
+    {"id":"evidence-export","source":"evidence","target":"export","source_port":"right","target_port":"left","flow":"write"},
+    {"id":"status-problem","source":"status","target":"problem","source_port":"left","target_port":"right","flow":"control","label":"门控状态"}
+  ],
+  "legend_orientation":"horizontal","legend_x":60,"legend_y":690,"legend_locked":true,
+  "legend":[{"flow":"read","label":"读取证据"},{"flow":"data","label":"时间/指标"},{"flow":"write","label":"导出"},{"flow":"control","label":"联动控制"}],
+  "footer":"图4  动作反馈显示与证据复看结构","footer_position":"bottom-right"
+}

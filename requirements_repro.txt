@@ -7,3 +7,20 @@ plotly
 dash
 parse
 ultralytics
+tqdm
+pycocotools
+lap
+matplotlib
+
+# Local Web UI (Flask is imported directly by web_app/server.py; keep it
+# explicit instead of relying on Dash's transitive dependency.)
+Flask
+
+# Static ffmpeg fallback used by audio-hit detection, H.264 transcoding, and
+# rally clipping when a system ffmpeg executable is unavailable.
+imageio-ffmpeg
+
+# Optional BST stroke-type adapter (the adapter remains safe when these are
+# absent, but installing them enables upstream BST checkpoints).
+positional-encodings
+torchinfo

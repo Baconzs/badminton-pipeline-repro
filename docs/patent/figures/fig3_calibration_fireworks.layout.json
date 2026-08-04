@@ -1,0 +1,323 @@
+{
+  "canvas": {
+    "height": 800.0,
+    "width": 1400.0
+  },
+  "composition": {
+    "limits": {
+      "max_bends_per_edge": 2,
+      "max_bridged_crossings": 0,
+      "max_route_stretch": 1.35,
+      "max_total_bends": 8,
+      "min_container_gutter": 20.0,
+      "min_label_clearance": 4.0,
+      "min_node_gap": 40.0,
+      "min_segment_length": 16.0,
+      "profile": "showcase"
+    },
+    "metrics": {
+      "bridged_crossings": 0,
+      "max_route_stretch": 1.0,
+      "minimum_container_gutter": 26.0,
+      "minimum_node_gap": 40.0,
+      "shortest_segment": 40.0,
+      "total_bends": 2
+    },
+    "ok": true,
+    "profile": "showcase",
+    "score": 100,
+    "violations": []
+  },
+  "edges": [
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "corners-to-h",
+      "length": 144.0,
+      "route": [
+        [
+          394.0,
+          214.0
+        ],
+        [
+          538.0,
+          214.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "corner_points",
+      "source_port": [
+        394.0,
+        214.0
+      ],
+      "target": "homography",
+      "target_port": [
+        538.0,
+        214.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "h-to-court",
+      "length": 144.0,
+      "route": [
+        [
+          862.0,
+          214.0
+        ],
+        [
+          1006.0,
+          214.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "homography",
+      "source_port": [
+        862.0,
+        214.0
+      ],
+      "target": "court_rect",
+      "target_port": [
+        1006.0,
+        214.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "point-to-gate",
+      "length": 144.0,
+      "route": [
+        [
+          394.0,
+          327.0
+        ],
+        [
+          538.0,
+          327.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "image_point",
+      "source_port": [
+        394.0,
+        327.0
+      ],
+      "target": "calibration_gate",
+      "target_port": [
+        538.0,
+        327.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "gate-to-projected",
+      "length": 144.0,
+      "route": [
+        [
+          862.0,
+          327.0
+        ],
+        [
+          1006.0,
+          327.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "calibration_gate",
+      "source_port": [
+        862.0,
+        327.0
+      ],
+      "target": "projected_point",
+      "target_port": [
+        1006.0,
+        327.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "court-to-projected",
+      "length": 40.0,
+      "route": [
+        [
+          1168.0,
+          254.0
+        ],
+        [
+          1168.0,
+          294.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "court_rect",
+      "source_port": [
+        1168.0,
+        254.0
+      ],
+      "target": "projected_point",
+      "target_port": [
+        1168.0,
+        294.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 2,
+      "bridges": [],
+      "crossings": [],
+      "id": "projected-to-distance",
+      "length": 944.0,
+      "route": [
+        [
+          1168.0,
+          360.0
+        ],
+        [
+          1168.0,
+          414.0
+        ],
+        [
+          350.0,
+          414.0
+        ],
+        [
+          350.0,
+          486.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "projected_point",
+      "source_port": [
+        1168.0,
+        360.0
+      ],
+      "target": "distance_range",
+      "target_port": [
+        350.0,
+        486.0
+      ],
+      "waypoints": [
+        [
+          1168.0,
+          414.0
+        ],
+        [
+          350.0,
+          414.0
+        ]
+      ]
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "distance-to-state",
+      "length": 50.0,
+      "route": [
+        [
+          500.0,
+          527.0
+        ],
+        [
+          550.0,
+          527.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "distance_range",
+      "source_port": [
+        500.0,
+        527.0
+      ],
+      "target": "boundary_state",
+      "target_port": [
+        550.0,
+        527.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "state-to-report",
+      "length": 50.0,
+      "route": [
+        [
+          850.0,
+          527.0
+        ],
+        [
+          900.0,
+          527.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "boundary_state",
+      "source_port": [
+        850.0,
+        527.0
+      ],
+      "target": "landing_report",
+      "target_port": [
+        900.0,
+        527.0
+      ],
+      "waypoints": []
+    }
+  ],
+  "input_schema": "v1",
+  "issues": [],
+  "mode": "architecture",
+  "ok": true,
+  "placements": {
+    "legend": {
+      "actual": [
+        46.0,
+        714.0
+      ],
+      "bounds": [
+        36.0,
+        700.0,
+        497.6,
+        746.0
+      ],
+      "moved": false,
+      "requested": [
+        46.0,
+        714.0
+      ]
+    }
+  },
+  "schema_version": 1,
+  "semantics": {
+    "details": {},
+    "ok": true,
+    "profile": "generic",
+    "style": 1,
+    "visual_theme": "Flat Icon"
+  },
+  "style": {
+    "id": 1,
+    "name": "Flat Icon"
+  },
+  "summary": {
+    "bridged_crossings": 0,
+    "edges": 8,
+    "nodes": 9
+  },
+  "text_metrics": "heuristic-v1"
+}
