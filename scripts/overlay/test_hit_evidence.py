@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Focused regression tests for exported hit-event evidence gates."""
 
+import csv
+import tempfile
 import unittest
 
 from ball_tracking import (
@@ -11,9 +13,12 @@ from ball_tracking import (
     validate_hit_event_evidence,
 )
 from overlay_player_analytics import (
+    apply_strict_pose_hitter_associations,
     has_confirmed_model_audio_evidence,
+    infer_single_unknown_hitter_from_rally_anchors,
     merge_hit_events,
     merge_visual_hit_candidates,
+    write_ball_tracking_csv,
 )
 
 
@@ -128,14 +133,15 @@ class HitEvidenceValidationTests(unittest.TestCase):
         self.assertEqual(accepted, [])
         self.assertEqual(stats.get("trajectory_position_mismatch"), 1)
 
-    def test_audio_confirmation_does_not_shift_visual_hit_frame(self):
+    def test_strict_audio_contact_identity_propagates_without_shifting_visual_frame(self):
         visual = HitEvent(
             50, 500.0, 220.0, 0.76, 24.0,
             source="curvature", hitter="unknown",
         )
         audio = HitEvent(
-            55, 560.0, 260.0, 0.94, 0.0,
+            52, 560.0, 260.0, 0.94, 0.0,
             source="audio_ball", hitter="near", uncertain=True,
+            hitter_confidence=0.82, hitter_source="pose_contact",
         )
         merged = merge_hit_events([visual], [audio], min_separation_frames=8)
         self.assertEqual(len(merged), 1)
@@ -143,6 +149,193 @@ class HitEvidenceValidationTests(unittest.TestCase):
         self.assertEqual((merged[0].x, merged[0].y), (500.0, 220.0))
         self.assertEqual(merged[0].source, "curvature")
         self.assertEqual(merged[0].hitter, "near")
+        self.assertEqual(merged[0].hitter_source, "pose_contact")
+        self.assertAlmostEqual(merged[0].hitter_confidence, 0.82)
+
+    def test_strict_pose_association_labels_visual_candidates_before_merge(self):
+        visual = HitEvent(
+            50, 500.0, 220.0, 0.76, 24.0,
+            source="curvature", hitter="unknown",
+        )
+        pose_evidence = {
+            50: {
+                "players": [
+                    # The virtual racket tip is close to the measured ball.
+                    {"side": "near", "contact": (510.0, 230.0), "torso": 100.0},
+                    # Duplicate same-side detections must be collapsed before
+                    # comparing near/far contact distances.
+                    {"side": "near", "contact": (513.0, 223.0), "torso": 100.0},
+                    # A visible opponent is sufficiently farther away to make
+                    # this a strict, rather than nearest-body, association.
+                    {"side": "far", "contact": (500.0, 20.0), "torso": 100.0},
+                ],
+            },
+        }
+
+        stats = apply_strict_pose_hitter_associations([visual], pose_evidence)
+
+        self.assertEqual(visual.hitter, "near")
+        self.assertEqual(visual.hitter_source, "pose_contact")
+        self.assertGreaterEqual(visual.hitter_confidence, 0.75)
+        self.assertEqual(stats["associated"], 1)
+        self.assertEqual(stats["updated"], 1)
+
+    def test_loose_audio_side_hint_does_not_propagate_to_visual_hit(self):
+        visual = HitEvent(
+            50, 500.0, 220.0, 0.76, 24.0,
+            source="curvature", hitter="unknown",
+        )
+        # Legacy nearest-body hints carried neither a strict contact source
+        # nor an attribution confidence.  They remain timing evidence only.
+        audio = HitEvent(
+            52, 560.0, 260.0, 0.94, 0.0,
+            source="audio_ball", hitter="near", uncertain=True,
+        )
+        merged = merge_hit_events([visual], [audio], min_separation_frames=8)
+        self.assertEqual(merged[0].hitter, "unknown")
+        self.assertEqual(merged[0].hitter_source, "unknown")
+
+    def test_ambiguous_nearby_visual_turns_do_not_receive_audio_identity(self):
+        first = HitEvent(50, 500.0, 220.0, 0.76, 24.0, source="curvature")
+        second = HitEvent(53, 540.0, 230.0, 0.75, 22.0, source="curvature")
+        audio = HitEvent(
+            52, 520.0, 225.0, 0.94, 0.0,
+            source="audio_ball", hitter="near", uncertain=True,
+            hitter_confidence=0.84, hitter_source="pose_contact",
+        )
+        # Keep both visual turns through NMS while retaining the three-frame
+        # identity-association window; the audio event is deliberately
+        # ambiguous and must not choose either one.
+        merged = merge_hit_events([first, second], [audio], min_separation_frames=3)
+        self.assertEqual([event.hitter for event in merged], ["unknown", "unknown"])
+
+    def test_sidecar_exports_hitter_confidence_and_source(self):
+        track = [BallPoint(0, 10.0, 20.0, True, "model", True, 1.0)]
+        event = HitEvent(
+            0, 10.0, 20.0, 0.91, 18.0,
+            hitter="near", hitter_confidence=0.83,
+            hitter_source="pose_contact",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = f"{directory}/sidecar.csv"
+            write_ball_tracking_csv(
+                path,
+                {0: (1, 10, 20, "model", 1.0)},
+                track,
+                [event],
+                [1],
+            )
+            with open(path, encoding="utf-8", newline="") as stream:
+                row = next(csv.DictReader(stream))
+        self.assertEqual(row["HitHitter"], "near")
+        self.assertEqual(row["HitHitterConfidence"], "0.8300")
+        self.assertEqual(row["HitHitterSource"], "pose_contact")
+
+    def test_rally_alternation_fills_only_single_unknown_between_pose_anchors(self):
+        events = [
+            HitEvent(
+                12, 100.0, 200.0, 0.9, 20.0,
+                hitter="near", rally=3,
+                hitter_confidence=0.75, hitter_source="pose_contact",
+            ),
+            HitEvent(28, 120.0, 190.0, 0.88, 22.0, rally=3),
+            HitEvent(
+                44, 140.0, 180.0, 0.91, 24.0,
+                hitter="near", rally=3,
+                hitter_confidence=0.87, hitter_source="pose_contact",
+            ),
+        ]
+        original_center = (
+            events[1].frame, events[1].x, events[1].y, events[1].score,
+            events[1].source, events[1].uncertain, events[1].rally,
+        )
+
+        stats = infer_single_unknown_hitter_from_rally_anchors(events)
+
+        self.assertEqual(events[1].hitter, "far")
+        self.assertAlmostEqual(events[1].hitter_confidence, 0.55)
+        self.assertEqual(events[1].hitter_source, "rally_alternation_inferred")
+        self.assertEqual(
+            (
+                events[1].frame, events[1].x, events[1].y, events[1].score,
+                events[1].source, events[1].uncertain, events[1].rally,
+            ),
+            original_center,
+        )
+        self.assertEqual(stats["filled"], 1)
+
+    def test_rally_alternation_never_uses_itself_to_balance_counts(self):
+        events = [
+            HitEvent(
+                12, 100.0, 200.0, 0.9, 20.0,
+                hitter="near", rally=3,
+                hitter_confidence=0.91, hitter_source="pose_contact",
+            ),
+            HitEvent(28, 120.0, 190.0, 0.88, 22.0, rally=3),
+            # Opposite anchor sides cannot uniquely explain one missing hit,
+            # so the unknown remains available for human video review.
+            HitEvent(
+                44, 140.0, 180.0, 0.91, 24.0,
+                hitter="far", rally=3,
+                hitter_confidence=0.89, hitter_source="pose_contact",
+            ),
+            # A different rally must not supply an endpoint to make hit
+            # totals look balanced.
+            HitEvent(
+                60, 150.0, 175.0, 0.90, 23.0,
+                hitter="near", rally=4,
+                hitter_confidence=0.92, hitter_source="pose_contact",
+            ),
+        ]
+
+        stats = infer_single_unknown_hitter_from_rally_anchors(events)
+
+        self.assertEqual(events[1].hitter, "unknown")
+        self.assertEqual(events[1].hitter_source, "unknown")
+        self.assertEqual(stats["filled"], 0)
+        self.assertEqual(stats["skipped_opposite_anchors"], 1)
+
+    def test_rally_alternation_requires_strong_pose_contact_anchors(self):
+        events = [
+            HitEvent(
+                12, 100.0, 200.0, 0.9, 20.0,
+                hitter="near", rally=3,
+                hitter_confidence=0.99, hitter_source="sidecar",
+            ),
+            HitEvent(28, 120.0, 190.0, 0.88, 22.0, rally=3),
+            HitEvent(
+                44, 140.0, 180.0, 0.91, 24.0,
+                hitter="near", rally=3,
+                hitter_confidence=0.74, hitter_source="pose_contact",
+            ),
+        ]
+
+        stats = infer_single_unknown_hitter_from_rally_anchors(events)
+
+        self.assertEqual(events[1].hitter, "unknown")
+        self.assertEqual(stats["filled"], 0)
+
+    def test_rally_alternation_skips_close_or_endpoint_candidates(self):
+        def pose_anchor(frame):
+            return HitEvent(
+                frame, 100.0, 200.0, 0.9, 20.0,
+                hitter="near", rally=3,
+                hitter_confidence=0.82, hitter_source="pose_contact",
+            )
+
+        close_events = [pose_anchor(12), HitEvent(20, 120.0, 190.0, 0.88, 22.0, rally=3), pose_anchor(36)]
+        close_stats = infer_single_unknown_hitter_from_rally_anchors(close_events)
+        self.assertEqual(close_events[1].hitter, "unknown")
+        self.assertEqual(close_stats["skipped_close_events"], 1)
+
+        endpoint_events = [
+            pose_anchor(12),
+            HitEvent(28, 120.0, 190.0, 0.88, 22.0, rally=3, source="edge_exit"),
+            pose_anchor(44),
+        ]
+        endpoint_stats = infer_single_unknown_hitter_from_rally_anchors(endpoint_events)
+        self.assertEqual(endpoint_events[1].hitter, "unknown")
+        self.assertEqual(endpoint_stats["skipped_collision_sources"], 1)
 
     def test_audio_without_visual_candidate_is_not_exported(self):
         audio = HitEvent(

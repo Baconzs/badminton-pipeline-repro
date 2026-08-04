@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "mode": "architecture",
+  "style": 1,
+  "quality_profile": "standard",
+  "width": 1200,
+  "height": 760,
+  "title": "图1  羽毛球动作证据反馈装置总体结构",
+  "subtitle": "视频采集、证据处理、训练反馈与可审计存储",
+  "style_overrides": {"font_family": "'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif"},
+  "containers": [
+    {"id":"acq","x":36,"y":112,"width":300,"height":500,"label":"采集组件（2、6）","subtitle":"原始视频与标定信息"},
+    {"id":"compute","x":370,"y":112,"width":470,"height":500,"label":"计算主机（3）","subtitle":"姿态、球路和多拍门控"},
+    {"id":"out","x":874,"y":112,"width":290,"height":500,"label":"反馈组件（4、7、9）","subtitle":"训练人员可读输出"}
+  ],
+  "nodes": [
+    {"id":"camera","kind":"rect","x":72,"y":178,"width":220,"height":76,"label":"视频采集头（2）","sublabel":"连续视频帧","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"calibration","kind":"rect","x":72,"y":334,"width":220,"height":76,"label":"球场标定输入组件（6）","sublabel":"四角点与场地尺寸","fill":"#fff7ed","stroke":"#f97316","title_size":17},
+    {"id":"operator","kind":"rect","x":72,"y":490,"width":220,"height":76,"label":"网络通信组件（8）","sublabel":"任务配置与结果传输","fill":"#ffffff","stroke":"#94a3b8","title_size":17},
+    {"id":"video","kind":"double_rect","x":420,"y":178,"width":370,"height":76,"label":"视频输入板（31）","sublabel":"球体轨迹与事件输入","fill":"#f5f3ff","stroke":"#7c3aed","title_size":17},
+    {"id":"pose","kind":"rect","x":420,"y":334,"width":370,"height":76,"label":"姿态特征提取单元（32）","sublabel":"肩肘腕、髋膝踝与相位样本","fill":"#f0fdf4","stroke":"#16a34a","title_size":17},
+    {"id":"evidence","kind":"hexagon","x":420,"y":490,"width":370,"height":76,"label":"多拍证据缓冲单元（34）","sublabel":"击球门控（33）·反馈生成（35）","fill":"#faf5ff","stroke":"#7c3aed","title_size":17},
+    {"id":"display","kind":"rect","x":910,"y":178,"width":220,"height":76,"label":"显示组件（4）","sublabel":"问题、训练与证据时间码","fill":"#eff6ff","stroke":"#2563eb","title_size":17},
+    {"id":"storage","kind":"double_rect","x":910,"y":334,"width":220,"height":76,"label":"可拆卸存储组件（9）","sublabel":"帧号、来源、置信度、回合","fill":"#f0fdf4","stroke":"#16a34a","title_size":17},
+    {"id":"audio","kind":"rect","x":910,"y":490,"width":220,"height":76,"label":"声光提示单元（7）","sublabel":"状态与异常提示","fill":"#fff7ed","stroke":"#f97316","title_size":17}
+  ],
+  "arrows": [
+    {"id":"camera-video","source":"camera","target":"video","source_port":"right","target_port":"left","flow":"read"},
+    {"id":"calib-video","source":"calibration","target":"video","source_port":"right","target_port":"left","flow":"data","label":"标定参数"},
+    {"id":"operator-evidence","source":"operator","target":"evidence","source_port":"right","target_port":"left","flow":"control","label":"配置"},
+    {"id":"video-pose","source":"video","target":"pose","source_port":"bottom","target_port":"top","flow":"data","label":"击球窗口"},
+    {"id":"pose-evidence","source":"pose","target":"evidence","source_port":"bottom","target_port":"top","flow":"write","label":"姿态信号"},
+    {"id":"video-evidence","source":"video","target":"evidence","source_port":"right","target_port":"left","flow":"data","label":"球路证据"},
+    {"id":"evidence-display","source":"evidence","target":"display","source_port":"right","target_port":"left","flow":"read"},
+    {"id":"evidence-storage","source":"evidence","target":"storage","source_port":"right","target_port":"left","flow":"write"},
+    {"id":"evidence-audio","source":"evidence","target":"audio","source_port":"right","target_port":"left","flow":"control","label":"状态提示"}
+  ],
+  "legend_orientation":"horizontal",
+  "legend_x":60,
+  "legend_y":690,
+  "legend_locked":true,
+  "legend":[{"flow":"read","label":"输入/读取"},{"flow":"data","label":"证据数据"},{"flow":"write","label":"存储"},{"flow":"control","label":"控制"}],
+  "footer":"图1  羽毛球动作证据反馈装置总体结构",
+  "footer_position":"bottom-right"
+}

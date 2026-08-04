@@ -111,7 +111,8 @@ def detect_audio_hit_candidates(
     high_ratio_threshold: float = 0.05,
     nms_frames: float = 8.0,
     sample_rate: int = 48000,
-) -> List[AudioHitCandidate]:
+    return_audio_available: bool = False,
+):
     """Return broadband audio impulses in source-video frame coordinates.
 
     A 21 ms spectral window is advanced every 5 ms.  Every feature is
@@ -124,10 +125,22 @@ def detect_audio_hit_candidates(
     fps = max(1.0, float(video_fps))
     rate = max(16000, int(sample_rate))
     samples = _decode_mono_pcm(video_path, rate)
+
+    # A source without an audio stream is common for exported coaching clips.
+    # Keep that distinct from an audio stream which simply has no sufficiently
+    # sharp impulses: callers need to retain visual-only hit detection in the
+    # former case without weakening the audio-evidence rule in the latter.
+    audio_available = len(samples) >= 2
+
+    def finish(candidates: List[AudioHitCandidate]):
+        if return_audio_available:
+            return candidates, audio_available
+        return candidates
+
     window_size = 1024
     hop = max(1, int(round(rate * 0.005)))
     if len(samples) < window_size:
-        return []
+        return finish([])
     samples -= float(np.median(samples))
 
     count = 1 + (len(samples) - window_size) // hop
@@ -196,13 +209,13 @@ def detect_audio_hit_candidates(
         ):
             selected.append(int(index))
     selected.sort(key=lambda index: video_frame[index])
-    return [
+    return finish([
         AudioHitCandidate(
             frame=int(round(float(video_frame[index]))),
             score=float(score[index]),
         )
         for index in selected
-    ]
+    ])
 
 
 __all__ = ["AudioHitCandidate", "detect_audio_hit_candidates"]

@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1180" width="1000" height="1180" data-generator="fireworks-tech-graph" data-schema-version="1" data-text-metrics="heuristic-v1" data-style-id="1" data-visual-theme="Flat Icon" data-diagram-type="flowchart" data-motion-scene="" data-semantic-profile="generic" data-semantic-valid="true" data-quality-profile="standard" data-max-bends-per-edge="12" data-max-total-bends="100" data-max-route-stretch="5.0" data-max-bridged-crossings="8" data-min-node-gap="0.0" data-min-container-gutter="0.0" data-min-label-clearance="2.0" data-min-segment-length="0.0">
+  <defs>
+    <marker id="arrowA" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrowB" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/>
+    </marker>
+    <marker id="arrowC" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowE" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#f97316"/>
+    </marker>
+    <marker id="arrowF" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrowG" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/>
+    </marker>
+    <marker id="arrowH" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6b7280"/>
+    </marker>
+    <filter id="shadowSoft" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <filter id="shadowGlass" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#020617" flood-opacity="0.28"/>
+    </filter>
+    <style>
+    text { font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif; }
+    .title { font-size: 30px; font-weight: 700; fill: #111827; }
+    .subtitle { font-size: 14px; font-weight: 500; fill: #6b7280; }
+    .section { font-size: 13px; font-weight: 700; fill: #2563eb; letter-spacing: 1.4px; }
+    .section-sub { font-size: 12px; font-weight: 500; fill: #94a3b8; }
+    .node-title { font-weight: 700; fill: #111827; }
+    .node-sub { font-size: 12px; font-weight: 500; fill: #6b7280; }
+    .node-type { font-size: 12px; font-weight: 700; fill: #9ca3af; letter-spacing: 0.08em; }
+    .arrow-label { font-size: 12px; font-weight: 600; fill: #6b7280; }
+    .legend { font-size: 12px; font-weight: 500; fill: #6b7280; }
+    .footnote { font-size: 12px; font-weight: 500; fill: #94a3b8; }
+    .metric-label { font-size: 8.5px; font-weight: 700; fill: #94a3b8; text-transform: uppercase; }
+    .metric-value { font-size: 9.5px; font-weight: 700; fill: #111827; }
+    </style>
+  </defs>
+  <rect data-graph-role="background" width="1000.0" height="1180.0" fill="#ffffff"/>
+  <text x="500.0" y="56" text-anchor="middle" class="title">图3  骨骼与球路联合时序特征融合结构</text>
+  <text x="500.0" y="82" text-anchor="middle" class="subtitle">三路输入经过时间编码、跨模态关联和双人交互后输出识别表示</text>
+  <path id="pose-enc" data-graph-role="edge" data-edge-id="pose-enc" data-source="pose" data-target="encpose" data-edge-kind="flow" data-topic-id="" data-flow="data" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="0" data-route-stretch="1.0" data-bridges="" d="M 195,186 L 195,300" fill="none" stroke="#f97316" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowE)"/>
+  <path id="ball-enc" data-graph-role="edge" data-edge-id="ball-enc" data-source="ball" data-target="encball" data-edge-kind="flow" data-topic-id="" data-flow="data" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="0" data-route-stretch="1.0" data-bridges="" d="M 500,186 L 500,300" fill="none" stroke="#f97316" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowE)"/>
+  <path id="pos-enc" data-graph-role="edge" data-edge-id="pos-enc" data-source="position" data-target="encpos" data-edge-kind="flow" data-topic-id="" data-flow="data" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="0" data-route-stretch="1.0" data-bridges="" d="M 805,186 L 805,300" fill="none" stroke="#f97316" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowE)"/>
+  <path id="enc-cross1" data-graph-role="edge" data-edge-id="enc-cross1" data-source="encpose" data-target="cross" data-edge-kind="flow" data-topic-id="" data-flow="data" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="1" data-route-stretch="1.0" data-bridges="" d="M 195,376 L 195,500 L 250,500" fill="none" stroke="#f97316" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowE)"/>
+  <path id="enc-cross2" data-graph-role="edge" data-edge-id="enc-cross2" data-source="encball" data-target="cross" data-edge-kind="flow" data-topic-id="" data-flow="data" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="0" data-route-stretch="1.0" data-bridges="" d="M 500,376 L 500,500" fill="none" stroke="#f97316" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowE)"/>
+  <path id="enc-cross3" data-graph-role="edge" data-edge-id="enc-cross3" data-source="encpos" data-target="cross" data-edge-kind="flow" data-topic-id="" data-flow="data" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="1" data-route-stretch="1.0" data-bridges="" d="M 805,376 L 805,500 L 750,500" fill="none" stroke="#f97316" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowE)"/>
+  <path id="cross-interaction" data-graph-role="edge" data-edge-id="cross-interaction" data-source="cross" data-target="interaction" data-edge-kind="flow" data-topic-id="" data-flow="control" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="0" data-route-stretch="1.0" data-bridges="" d="M 500,584 L 500,680" fill="none" stroke="#7c3aed" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowA)"/>
+  <path id="interaction-head" data-graph-role="edge" data-edge-id="interaction-head" data-source="interaction" data-target="head" data-edge-kind="flow" data-topic-id="" data-flow="data" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="0" data-route-stretch="1.0" data-bridges="" d="M 500,764 L 500,860" fill="none" stroke="#f97316" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowE)"/>
+  <path id="head-gate" data-graph-role="edge" data-edge-id="head-gate" data-source="head" data-target="gate" data-edge-kind="flow" data-topic-id="" data-flow="control" data-motion-role="" data-motion-stage="" data-motion-order="" data-protocol="" data-via="" data-critical-path-id="" data-critical-hop="" data-critical-hops="" data-critical="false" data-bends="0" data-route-stretch="1.0" data-bridges="" d="M 500,944 L 500,1040" fill="none" stroke="#7c3aed" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowA)"/>
+  <g id="node-pose" data-graph-role="node" data-node-id="pose" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="70,110,320,186">
+  <rect x="70.0" y="110.0" width="250.0" height="76.0" rx="10.0" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="195.0" y="148.0" text-anchor="middle" class="node-title" font-size="17.0">人体框归一化电路（321）</text>
+  <text x="195.0" y="170.0" text-anchor="middle" class="node-sub">双人关键点与骨骼差分</text>
+  </g>
+  <g id="node-ball" data-graph-role="node" data-node-id="ball" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="375,110,625,186">
+  <rect x="375.0" y="110.0" width="250.0" height="76.0" rx="10.0" fill="#eff6ff" stroke="#2563eb" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="500.0" y="148.0" text-anchor="middle" class="node-title" font-size="17.0">球点归一化电路（323）</text>
+  <text x="500.0" y="170.0" text-anchor="middle" class="node-sub">视频宽高归一化</text>
+  </g>
+  <g id="node-position" data-graph-role="node" data-node-id="position" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="680,110,930,186">
+  <rect x="680.0" y="110.0" width="250.0" height="76.0" rx="10.0" fill="#fff7ed" stroke="#f97316" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="805.0" y="148.0" text-anchor="middle" class="node-title" font-size="17.0">脚点位置归一化电路（324）</text>
+  <text x="805.0" y="170.0" text-anchor="middle" class="node-sub">脚点投影与边界归一化</text>
+  </g>
+  <g id="node-encpose" data-graph-role="node" data-node-id="encpose" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="70,300,320,376">
+  <rect x="70.0" y="300.0" width="250.0" height="76.0" rx="10.0" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="195.0" y="338.0" text-anchor="middle" class="node-title" font-size="17.0">姿态时间编码电路（331）</text>
+  <text x="195.0" y="360.0" text-anchor="middle" class="node-sub">提取局部动作变化</text>
+  </g>
+  <g id="node-encball" data-graph-role="node" data-node-id="encball" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="375,300,625,376">
+  <rect x="375.0" y="300.0" width="250.0" height="76.0" rx="10.0" fill="#eff6ff" stroke="#2563eb" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="500.0" y="338.0" text-anchor="middle" class="node-title" font-size="17.0">球路时间编码电路（332）</text>
+  <text x="500.0" y="360.0" text-anchor="middle" class="node-sub">提取飞行节奏</text>
+  </g>
+  <g id="node-encpos" data-graph-role="node" data-node-id="encpos" data-semantic-role="rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="680,300,930,376">
+  <rect x="680.0" y="300.0" width="250.0" height="76.0" rx="10.0" fill="#fff7ed" stroke="#f97316" stroke-width="1.8" filter="url(#shadowSoft)"/>
+  <text x="805.0" y="338.0" text-anchor="middle" class="node-title" font-size="17.0">位置时间编码电路（333）</text>
+  <text x="805.0" y="360.0" text-anchor="middle" class="node-sub">提取场区变化</text>
+  </g>
+  <g id="node-cross" data-graph-role="node" data-node-id="cross" data-semantic-role="hexagon" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="250,500,750,584">
+  <path d="M 272.0 500.0 L 728.0 500.0 L 750.0 542.0 L 728.0 584.0 L 272.0 584.0 L 250.0 542.0 Z" fill="#faf5ff" stroke="#7c3aed" stroke-width="2.0" filter="url(#shadowSoft)"/>
+  <text x="500.0" y="542.0" text-anchor="middle" class="node-title" font-size="18.0">跨模态关联单元（34）</text>
+  <text x="500.0" y="564.0" text-anchor="middle" class="node-sub">以羽球序列关联双方同时刻姿态</text>
+  </g>
+  <g id="node-interaction" data-graph-role="node" data-node-id="interaction" data-semantic-role="hexagon" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="250,680,750,764">
+  <path d="M 272.0 680.0 L 728.0 680.0 L 750.0 722.0 L 728.0 764.0 L 272.0 764.0 L 250.0 722.0 Z" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2.0" filter="url(#shadowSoft)"/>
+  <text x="500.0" y="722.0" text-anchor="middle" class="node-title" font-size="18.0">双人交互编码单元（35）</text>
+  <text x="500.0" y="744.0" text-anchor="middle" class="node-sub">分别形成两名球员与羽球的联合表示</text>
+  </g>
+  <g id="node-head" data-graph-role="node" data-node-id="head" data-semantic-role="double_rect" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="250,860,750,944">
+  <rect x="250.0" y="860.0" width="500.0" height="84.0" rx="10.0" fill="#eff6ff" stroke="#2563eb" stroke-width="2.0" filter="url(#shadowSoft)"/>
+  <rect x="256.0" y="866.0" width="488.0" height="72.0" rx="7.0" fill="none" stroke="#2563eb" stroke-width="1.2" opacity="0.65"/>
+  <text x="500.0" y="902.0" text-anchor="middle" class="node-title" font-size="18.0">分类输出单元（36）</text>
+  <text x="500.0" y="924.0" text-anchor="middle" class="node-sub">拼接两名球员与羽球的全局表示</text>
+  </g>
+  <g id="node-gate" data-graph-role="node" data-node-id="gate" data-semantic-role="hexagon" data-motion-role="" data-motion-stage="" data-motion-order="" data-parent="" data-deployment-id="" data-topic-id="" data-span-id="" data-station-order="" data-status="" data-start-ms="" data-duration-ms="" data-parent-span="" data-graph-bounds="250,1040,750,1124">
+  <path d="M 272.0 1040.0 L 728.0 1040.0 L 750.0 1082.0 L 728.0 1124.0 L 272.0 1124.0 L 250.0 1082.0 Z" fill="#fff7ed" stroke="#f97316" stroke-width="2.0" filter="url(#shadowSoft)"/>
+  <text x="500.0" y="1082.0" text-anchor="middle" class="node-title" font-size="18.0">置信门控单元（37）</text>
+  <text x="500.0" y="1104.0" text-anchor="middle" class="node-sub">低证据输出“待确认”，不强行定类</text>
+  </g>
+  <g id="legend" data-graph-role="legend">
+    <rect id="legend-zone" data-graph-role="reserved" data-reserved-kind="legend" x="72" y="988" width="240.96" height="46" rx="10" fill="none" stroke="none"/>
+    <line data-graph-role="decoration" x1="82.0" y1="1002.0" x2="112.0" y2="1002.0" stroke="#f97316" stroke-width="2.4" marker-end="url(#arrowE)"/>
+    <text data-graph-role="decoration" x="122.0" y="1006.0" class="legend">特征序列</text>
+    <line data-graph-role="decoration" x1="198.0" y1="1002.0" x2="228.0" y2="1002.0" stroke="#7c3aed" stroke-width="2.4" marker-end="url(#arrowA)"/>
+    <text data-graph-role="decoration" x="238.0" y="1006.0" class="legend">编码/门控</text>
+  </g>
+  <g id="footer" data-graph-role="reserved" data-graph-bounds="818,1152,958,1168">
+  <text x="818.0" y="1164.0" class="footnote">图3  骨骼与球路联合时序特征融合结构</text>
+  </g>
+</svg>

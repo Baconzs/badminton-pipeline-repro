@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "mode": "architecture",
+  "template_type": "architecture",
+  "style": 1,
+  "quality_profile": "showcase",
+  "width": 1400,
+  "height": 800,
+  "title": "球场四点标定与单应性投影",
+  "subtitle": "图像像素坐标 → 标准球场平面坐标 · 先校验标定，再计算落点与边线距离",
+  "style_overrides": {
+    "font_family": "'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif"
+  },
+  "containers": [
+    {
+      "id": "image_space",
+      "x": 36,
+      "y": 108,
+      "width": 392,
+      "height": 278,
+      "label": "01  图像坐标空间",
+      "subtitle": "原始视频像素 (x, y)"
+    },
+    {
+      "id": "transform_space",
+      "x": 504,
+      "y": 108,
+      "width": 392,
+      "height": 278,
+      "label": "02  标定与变换",
+      "subtitle": "四点对应求取 3×3 矩阵"
+    },
+    {
+      "id": "court_space",
+      "x": 972,
+      "y": 108,
+      "width": 392,
+      "height": 278,
+      "label": "03  标准球场坐标空间",
+      "subtitle": "地面矩形 (X, Y)"
+    },
+    {
+      "id": "projection_space",
+      "x": 36,
+      "y": 430,
+      "width": 1328,
+      "height": 186,
+      "label": "04  落点投影与边界判定",
+      "subtitle": "真实终局点、接触侧边缘和包围范围均可投影"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "corner_points",
+      "kind": "double_rect",
+      "x": 70,
+      "y": 174,
+      "width": 324,
+      "height": 80,
+      "label": "四点角点标定",
+      "sublabel": "TL · TR · BR · BL（左上→右下）",
+      "fill": "#eff6ff",
+      "stroke": "#2563eb",
+      "title_size": 18
+    },
+    {
+      "id": "image_point",
+      "kind": "rect",
+      "x": 70,
+      "y": 294,
+      "width": 324,
+      "height": 66,
+      "label": "图像点 p = (x, y)",
+      "sublabel": "真实终局球点 / 接触侧边缘",
+      "fill": "#ffffff",
+      "stroke": "#60a5fa",
+      "title_size": 16
+    },
+    {
+      "id": "homography",
+      "kind": "hexagon",
+      "x": 538,
+      "y": 174,
+      "width": 324,
+      "height": 80,
+      "label": "单应性矩阵 H",
+      "sublabel": "H · p ≈ P（透视变换）",
+      "fill": "#f5f3ff",
+      "stroke": "#7c3aed",
+      "title_size": 18
+    },
+    {
+      "id": "calibration_gate",
+      "kind": "hexagon",
+      "x": 538,
+      "y": 294,
+      "width": 324,
+      "height": 66,
+      "label": "标定有效性门控",
+      "sublabel": "面积阈值 + H 可逆；失败则停止输出",
+      "fill": "#fff7ed",
+      "stroke": "#f97316",
+      "title_size": 16
+    },
+    {
+      "id": "court_rect",
+      "kind": "double_rect",
+      "x": 1006,
+      "y": 174,
+      "width": 324,
+      "height": 80,
+      "label": "标准球场矩形",
+      "sublabel": "6.10 m × 13.40 m · P = (X, Y)",
+      "fill": "#f0fdf4",
+      "stroke": "#16a34a",
+      "title_size": 18
+    },
+    {
+      "id": "projected_point",
+      "kind": "rect",
+      "x": 1006,
+      "y": 294,
+      "width": 324,
+      "height": 66,
+      "label": "投影落点 P",
+      "sublabel": "球场平面坐标 · 最近边线可计算",
+      "fill": "#ffffff",
+      "stroke": "#22c55e",
+      "title_size": 16
+    },
+    {
+      "id": "distance_range",
+      "kind": "rect",
+      "x": 200,
+      "y": 486,
+      "width": 300,
+      "height": 82,
+      "label": "边线距离区间",
+      "sublabel": "中心点 + 接触侧边缘 + 包围范围",
+      "fill": "#eff6ff",
+      "stroke": "#2563eb",
+      "title_size": 17
+    },
+    {
+      "id": "boundary_state",
+      "kind": "hexagon",
+      "x": 550,
+      "y": 486,
+      "width": 300,
+      "height": 82,
+      "label": "边线状态",
+      "sublabel": "IN（界内） · OUT（界外） · REVIEW（复核）",
+      "fill": "#faf5ff",
+      "stroke": "#7c3aed",
+      "title_size": 17
+    },
+    {
+      "id": "landing_report",
+      "kind": "rect",
+      "x": 900,
+      "y": 486,
+      "width": 300,
+      "height": 82,
+      "label": "结构化落点报告",
+      "sublabel": "目标边线 · 证据帧 · 置信等级",
+      "fill": "#f5f3ff",
+      "stroke": "#7c3aed",
+      "title_size": 17
+    }
+  ],
+  "arrows": [
+    {
+      "id": "corners-to-h",
+      "source": "corner_points",
+      "target": "homography",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "data",
+      "label": "四点对应"
+    },
+    {
+      "id": "h-to-court",
+      "source": "homography",
+      "target": "court_rect",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "data",
+      "label": "映射"
+    },
+    {
+      "id": "point-to-gate",
+      "source": "image_point",
+      "target": "calibration_gate",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "control",
+      "label": "校验"
+    },
+    {
+      "id": "gate-to-projected",
+      "source": "calibration_gate",
+      "target": "projected_point",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "control",
+      "label": "通过"
+    },
+    {
+      "id": "court-to-projected",
+      "source": "court_rect",
+      "target": "projected_point",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "data"
+    },
+    {
+      "id": "projected-to-distance",
+      "source": "projected_point",
+      "target": "distance_range",
+      "source_port": "bottom",
+      "target_port": "top",
+      "flow": "data",
+      "label": "投影",
+      "route_points": [[1168, 414], [350, 414]]
+    },
+    {
+      "id": "distance-to-state",
+      "source": "distance_range",
+      "target": "boundary_state",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "control"
+    },
+    {
+      "id": "state-to-report",
+      "source": "boundary_state",
+      "target": "landing_report",
+      "source_port": "right",
+      "target_port": "left",
+      "flow": "read",
+      "label": "发布"
+    }
+  ],
+  "legend_orientation": "horizontal",
+  "legend_x": 46,
+  "legend_y": 714,
+  "legend_locked": true,
+  "legend": [
+    {"flow": "data", "label": "坐标 / 真实落点数据"},
+    {"flow": "control", "label": "标定与判定门控"},
+    {"flow": "read", "label": "结构化结果"}
+  ],
+  "footer": "图3  四点标定、单应性投影与边线状态判定"
+}

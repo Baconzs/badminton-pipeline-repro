@@ -86,6 +86,11 @@ class HitEvent:
     shot_coverage: float = 0.0
     shot_speed_quality: str = "pending"
     shot_speed_method: str = "pending"
+    # Hitter identity is independent from hit/trajectory quality.  A legacy
+    # side hint may be useful for diagnostics, but downstream coaching must be
+    # able to distinguish it from a strict pose-contact association.
+    hitter_confidence: float = 0.0
+    hitter_source: str = "unknown"
 
 
 def _raw_arrays(ball_dict: Mapping[int, Tuple], frame_count: int):

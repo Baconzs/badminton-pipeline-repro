@@ -1,0 +1,401 @@
+{
+  "canvas": {
+    "height": 760.0,
+    "width": 1200.0
+  },
+  "composition": {
+    "limits": {
+      "max_bends_per_edge": 12,
+      "max_bridged_crossings": 8,
+      "max_route_stretch": 5.0,
+      "max_total_bends": 100,
+      "min_container_gutter": 0.0,
+      "min_label_clearance": 2.0,
+      "min_node_gap": 0.0,
+      "min_segment_length": 0.0,
+      "profile": "standard"
+    },
+    "metrics": {
+      "bridged_crossings": 3,
+      "max_route_stretch": 1.0,
+      "minimum_container_gutter": 38.0,
+      "minimum_node_gap": 78.0,
+      "shortest_segment": 18.0,
+      "total_bends": 10
+    },
+    "ok": true,
+    "profile": "standard",
+    "score": 72,
+    "violations": []
+  },
+  "edges": [
+    {
+      "bends": 2,
+      "bridges": [],
+      "crossings": [],
+      "id": "video-sync",
+      "length": 136.0,
+      "route": [
+        [
+          334.0,
+          217.0
+        ],
+        [
+          354.4,
+          217.0
+        ],
+        [
+          354.4,
+          235.0
+        ],
+        [
+          452.0,
+          235.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "videoport",
+      "source_port": [
+        334.0,
+        217.0
+      ],
+      "target": "sync",
+      "target_port": [
+        452.0,
+        235.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 2,
+      "bridges": [
+        [
+          358.0,
+          235.0
+        ]
+      ],
+      "crossings": [
+        [
+          358.0,
+          235.0
+        ]
+      ],
+      "id": "pose-sync",
+      "length": 274.0,
+      "route": [
+        [
+          334.0,
+          373.0
+        ],
+        [
+          358.0,
+          373.0
+        ],
+        [
+          358.0,
+          217.0
+        ],
+        [
+          452.0,
+          217.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "poseport",
+      "source_port": [
+        334.0,
+        373.0
+      ],
+      "target": "sync",
+      "target_port": [
+        452.0,
+        217.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 2,
+      "bridges": [
+        [
+          393.0,
+          235.0
+        ],
+        [
+          393.0,
+          217.0
+        ]
+      ],
+      "crossings": [
+        [
+          393.0,
+          235.0
+        ],
+        [
+          393.0,
+          217.0
+        ]
+      ],
+      "id": "court-sync",
+      "length": 448.0,
+      "route": [
+        [
+          334.0,
+          529.0
+        ],
+        [
+          393.0,
+          529.0
+        ],
+        [
+          393.0,
+          199.0
+        ],
+        [
+          452.0,
+          199.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "courtport",
+      "source_port": [
+        334.0,
+        529.0
+      ],
+      "target": "sync",
+      "target_port": [
+        452.0,
+        199.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "sync-accel",
+      "length": 78.0,
+      "route": [
+        [
+          589.0,
+          256.0
+        ],
+        [
+          589.0,
+          334.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "sync",
+      "source_port": [
+        589.0,
+        256.0
+      ],
+      "target": "accel",
+      "target_port": [
+        589.0,
+        334.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "accel-model",
+      "length": 78.0,
+      "route": [
+        [
+          589.0,
+          412.0
+        ],
+        [
+          589.0,
+          490.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "accel",
+      "source_port": [
+        589.0,
+        412.0
+      ],
+      "target": "model",
+      "target_port": [
+        589.0,
+        490.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 2,
+      "bridges": [],
+      "crossings": [],
+      "id": "accel-screen",
+      "length": 261.0,
+      "route": [
+        [
+          726.0,
+          364.0
+        ],
+        [
+          750.0,
+          364.0
+        ],
+        [
+          750.0,
+          217.0
+        ],
+        [
+          840.0,
+          217.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "accel",
+      "source_port": [
+        726.0,
+        364.0
+      ],
+      "target": "screen",
+      "target_port": [
+        840.0,
+        217.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 0,
+      "bridges": [],
+      "crossings": [],
+      "id": "screen-indicator",
+      "length": 78.0,
+      "route": [
+        [
+          983.0,
+          256.0
+        ],
+        [
+          983.0,
+          334.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "screen",
+      "source_port": [
+        983.0,
+        256.0
+      ],
+      "target": "indicator",
+      "target_port": [
+        983.0,
+        334.0
+      ],
+      "waypoints": []
+    },
+    {
+      "bends": 2,
+      "bridges": [],
+      "crossings": [],
+      "id": "cooling-accel",
+      "length": 261.0,
+      "route": [
+        [
+          840.0,
+          529.0
+        ],
+        [
+          750.0,
+          529.0
+        ],
+        [
+          750.0,
+          382.0
+        ],
+        [
+          726.0,
+          382.0
+        ]
+      ],
+      "route_stretch": 1.0,
+      "source": "cooling",
+      "source_port": [
+        840.0,
+        529.0
+      ],
+      "target": "accel",
+      "target_port": [
+        726.0,
+        382.0
+      ],
+      "waypoints": []
+    }
+  ],
+  "input_schema": "v1",
+  "issues": [
+    {
+      "code": "EDGE_CROSSING_BRIDGED",
+      "coordinates": [
+        [
+          358.0,
+          235.0
+        ]
+      ],
+      "element": "pose-sync",
+      "severity": "info"
+    },
+    {
+      "code": "EDGE_CROSSING_BRIDGED",
+      "coordinates": [
+        [
+          393.0,
+          235.0
+        ],
+        [
+          393.0,
+          217.0
+        ]
+      ],
+      "element": "court-sync",
+      "severity": "info"
+    }
+  ],
+  "mode": "architecture",
+  "ok": true,
+  "placements": {
+    "legend": {
+      "actual": [
+        60.0,
+        690.0
+      ],
+      "bounds": [
+        50.0,
+        676.0,
+        536.88,
+        722.0
+      ],
+      "moved": false,
+      "requested": [
+        60.0,
+        690.0
+      ]
+    }
+  },
+  "schema_version": 1,
+  "semantics": {
+    "details": {},
+    "ok": true,
+    "profile": "generic",
+    "style": 1,
+    "visual_theme": "Flat Icon"
+  },
+  "style": {
+    "id": 1,
+    "name": "Flat Icon"
+  },
+  "summary": {
+    "bridged_crossings": 3,
+    "edges": 8,
+    "nodes": 9
+  },
+  "text_metrics": "heuristic-v1"
+}

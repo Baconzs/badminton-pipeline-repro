@@ -8,7 +8,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](#license)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/ychenfen/badminton-pipeline-repro/pulls)
 
-把一段普通的羽毛球比赛视频，转换成带**运动员轨迹、移动速度、累计跑动距离、羽毛球飞行轨迹**的可视化分析视频，最后还能加上电影级"子弹时间"特效。
+把一段普通的羽毛球比赛视频，转换成带**运动员轨迹、移动速度、累计跑动距离、羽毛球飞行轨迹**的可视化分析视频。当前默认输出普通速度分析视频；电影级"子弹时间"/慢动作特效可通过 Web UI 的“子弹镜头特效”按钮或命令行开关显式开启。
 
 整套系统基于 **TrackNet（球检测） + YOLOv8s-pose（球员姿态） + ByteTrack（多目标跟踪） + 透视矫正**，在 Apple Silicon Mac 上跑通过完整流程。
 
@@ -59,8 +59,8 @@
     ▼  Step 2: Overlay ──────────── YOLOv8s-pose + ByteTrack + Homography
 叠加分析的视频
     │
-    ▼  Step 3: FX ────────────────── 子弹时间冻帧 + 慢动作 + 虚拟轨道相机
-最终成品视频
+    ▼  Step 3: FX（可选）────────── 子弹时间冻帧 + 慢动作 + 虚拟轨道相机
+普通速度分析视频（默认）
 ```
 
 三段独立运行，每段可以单独迭代。改一次面板字号、调一次跳变阈值、加一个新特效，都不需要从头重跑。
@@ -110,13 +110,20 @@ python3 scripts/tools/select_court.py short.mp4
 
 ![球场角点标注](docs/images/02_court_corners.jpg)
 
-### 4. 一键跑通三段
+### 4. 一键跑通分析流程（FX 默认关闭）
 
 ```bash
 ./run_all_mac.sh \
   --input-video short.mp4 \
   --court-points "352,342,628,343,944,527,52,532" \
   --yolo-device mps
+```
+
+默认只执行 TrackNet 与 Overlay，最终视频保持普通速度。命令行可显式加入子弹时间/慢动作；Web UI 打开“子弹镜头特效”按钮即可对专业分析启用相同效果：
+
+```bash
+./run_all_mac.sh ... --enable-bullet-time-fx
+# 或：BADMINTON_ENABLE_BULLET_TIME_FX=1 ./run_all_mac.sh ...
 ```
 
 对于这段 1080p 羽毛球转播，脚本默认使用标准 TrackNet 解码和两个互补的非重叠时序相位。这样比在检测到 CUDA 后自动切换到高清分块更可靠：高清分块在高吊球时容易将球员、横幅或观众误认为羽球。`--tracknet-high-res` 仍可用于显式 A/B 测试，`--tracknet-tile-overlap 0.25` 用于调节其实验性分块重叠比例。
@@ -136,9 +143,9 @@ Overlay 阶段会在干净的输入画面上依次执行短缺口插值、常速
 跑完输出在 `~/yumaoqiu_repro/`：
 - `tracknet_official_result/short_ball.csv` — 球的逐帧坐标
 - `tracknet_official_result_phase_half/short_ball.csv` — 错开时序窗口的第二相位坐标
-- `end1_ball_tracking_official_fused.mp4` — 叠加分析的视频
+- `end1_ball_tracking_official_fused.mp4` — 普通速度叠加分析视频（默认播放产物）
 - `end1_ball_tracking_official_fused_ball_tracking.csv` — 可审计的轨迹、击球和回合 sidecar
-- `end1_ball_tracking_official_fused_fx.mp4` — 加了子弹时间特效的最终成品
+- `end1_ball_tracking_official_fused_fx.mp4` — 历史兼容文件名；FX 关闭时是普通速度视频，显式开启后才包含子弹时间特效
 
 播放器兼容性优先使用同目录的 `_h264.mp4` 文件（例如 `end1_ball_tracking_official_fused_h264.mp4`）。
 
@@ -149,6 +156,75 @@ Overlay 阶段会在干净的输入画面上依次执行短缺口插值、常速
 ```bash
 open demo/short_overlay_demo.mp4
 ```
+
+## Web UI（本地 ShuttleVision 工作台）
+
+仓库现在附带一个轻量 Flask Web UI，适合在本机选择视频、标定球场并提交后台分析任务。它不需要 Node.js 或前端构建工具，页面由 `web_app/static/` 提供，推理仍复用本仓库的 TrackNet/Overlay 脚本。
+
+### 启动
+
+在已安装依赖的 Python 环境中运行：
+
+```bash
+python3 -m pip install -r requirements_repro.txt
+./run_web_ui.sh
+```
+
+然后打开 <http://127.0.0.1:7860>。启动脚本会自动使用仓库内已准备的 BST 代码和 checkpoint（如果两者都存在）；如果机器上的默认 `python3` 不是项目环境，可以显式指定：
+
+```bash
+BADMINTON_UI_PYTHON=/data/miniconda3/envs/py311/bin/python ./run_web_ui.sh
+```
+
+也可以直接调用模块并修改监听端口：
+
+```bash
+python -m web_app.server --host 127.0.0.1 --port 7860 \
+  --python "$(command -v python3)"
+```
+
+局域网内访问时，把监听地址显式改为所有网卡，并在服务器防火墙放行该端口：
+
+```bash
+./run_web_ui.sh --host 0.0.0.0 --port 7860
+# 其他设备访问：http://<运行服务的电脑局域网 IP>:7860
+```
+
+默认仍监听 `127.0.0.1`，避免未经授权暴露上传接口；不要把服务直接暴露到公网。
+
+上传和任务结果默认保存在 `runtime/web_ui/`（该目录适合加入 `.gitignore`）。可用环境变量调整本地部署：
+
+| 变量 | 用途 | 默认值 |
+|---|---|---|
+| `BADMINTON_UI_DATA_ROOT` | 上传、任务和产物根目录 | `runtime/web_ui` |
+| `BADMINTON_UI_INPUT_ROOTS` | 允许“导入服务器路径”的目录，多个目录用系统路径分隔符 | 仓库根目录 |
+| `BADMINTON_UI_MAX_UPLOAD_BYTES` | 单次上传上限 | 20 GiB |
+| `BADMINTON_UI_PYTHON` | `run_web_ui.sh` 使用的 Python | `python3`（缺少依赖时尝试项目 conda 环境） |
+
+### 使用流程和可选功能
+
+1. 点击“选择视频”上传 MP4/MOV/MKV/AVI/WEBM/M4V；服务端会先验证视频可解码并生成封面。
+2. 在第一帧画布上按 **TL → TR → BR → BL** 点击球场四角。坐标会按原视频分辨率提交，不能点球网或观众区。
+3. 可分别勾选“自动回合切割”、“鹰眼辅助复核”、“专业比赛分析”和“子弹镜头特效”。
+   - 四项都关闭：只导入和预览，不启动模型。
+   - 只开回合切割：运行基础 TrackNet 球路分析，生成回合短片。
+   - 只开鹰眼辅助复核：运行基础球路分析，并只审查每个回合**最后一拍之后**的终局轨迹。系统先检测“落地前运动 → 速度骤降 → 至少 3 帧稳定”的真实事件；若落地后球被遮挡但原视频出现持续静止的小白球，会用多段背景差分恢复该目标，并给出 `OUT`/复核和边线距离范围。离屏、插值、跨缺口分支、球员身体锁定和后续击球不会直接生成落点。
+   - 开专业分析：运行双相位 TrackNet、YOLOv8-pose、BST 击球类型识别、击球/球员移动/热力图 Overlay。Motion Coach 分析准备、触球、可见动力链和恢复阶段；同类问题至少在 3 个独立高质量击球中重复时，才生成简洁的“问题 / 训练”建议。点击时间码可回看证据；没有可靠建议时页面显示 0 条，不用低置信内容填充。
+   - 开子弹镜头特效：自动带上专业分析，并在输出视频中加入冻结画面与慢动作；渲染时间会增加。
+   - 可自由组合：各功能复用同一个 sidecar；同时打开回合切割时会额外导出短片。
+   - 若长视频由同一固定全景机位组成，可额外打开“跨硬切镜头继续分析”；只有所有片段仍适用同一组球场四点时才建议使用。
+4. 任务在后台单 GPU 队列执行，页面会显示阶段、日志、摘要和可下载产物；浏览器优先播放 `_h264.mp4`。
+
+### 当前限制
+
+- 自动回合是“智能初筛”：`RallyID` 由有效球轨迹、已验证击球、约 5 秒断检和镜头切换聚类得到，不是严格的发球→死球语义分类器。短片带有默认前后缓冲，仍建议在时间轴上复核起止点。
+- 一键脚本和 Web UI 默认在第一个硬镜头切换后停止固定球场标定。多机位、回放、特写或换场视频需要先切成固定全景片段，或为每个场景单独标定；同一标定下可谨慎开启“跨硬切镜头继续分析”。
+- 专业移动轨迹和热力图目前主要烘焙在分析视频中；sidecar CSV 提供逐帧球轨迹、击球、回合编号和球速摘要，并不是完整的球员坐标/热力图 JSON。
+- Motion Coach 不展示逐拍候选。单拍须满足击球确认、击球方归属、真实球点和二维姿态门槛；仅靠回合交替推断的击球方、单帧肢体异常或重复击球记录都不能投票。相同问题按准备衔接、前场球、上手球、后场球和击球恢复等兼容动作组聚合，仍须至少 3 个独立可靠击球。低置信、低覆盖或区分度不足的 BST 结果视为缺失证据，不会否决独立可靠的球路规则；明确的类型冲突、侧别冲突和高置信但无法安全映射的类型仍会拦截。BST 只有在 Top-1 ≥85%、Top-1/Top-2 差值 ≥25 个百分点、姿态覆盖 ≥85%、球点覆盖 ≥55% 且与球路规则一致时，才成为精确球种建议的类型来源。单机位不能可靠判定握拍、拍面、旋转、真实球高、绝对球速、伤病或绝对动作分，因此证据不足时直接不输出建议。
+- “鹰眼辅助复核”是单机位二维落点复核，不是正式比赛 Hawk-Eye。它只把 `model`/`classical` 的真实终局观测作为轨迹证据，不使用插值、Kalman 预测、离屏桥接或 `terminal_endpoint_proxy`。当 TrackNet 在遮挡后漏掉静止球时，会用原视频的多段背景差分寻找持续、紧凑的新白色目标，并排除场线、广告和人体残差；恢复结果只发布边界、`OUT`/复核和距离范围，不输出厘米级伪精度。没有落地证据时明确显示“未观察到可靠落地事件”；距线 20 cm 内、超出边线 1 m、标定/镜头不稳或启用了跨硬切继续时会降级为视频复核。参考的开源方案和许可证边界见 [docs/hawkeye_open_source_review.md](docs/hawkeye_open_source_review.md)。请以原视频和裁判/教练复看为准，不能用于正式判罚。
+- TrackNet 和 Overlay 对长视频很耗时，服务端默认串行处理以避免 GPU/内存争用。音频击球检测会解码整段音频，小时级视频可能占用大量内存；资源不足时应缩短视频或关闭音频辅助。
+- 浏览器上传的是文件内容，不会把用户电脑上的任意绝对路径暴露给服务器。“导入服务器路径”仅允许配置目录内的普通视频文件；默认服务只监听 `127.0.0.1`。
+- 上传视频最好先规范化为恒定帧率（CFR）H.264 MP4。VFR、旋转元数据或不兼容的编码可能造成帧坐标和切片时间轻微漂移。
 
 ---
 
@@ -219,9 +295,9 @@ H, _ = cv2.findHomography(court_quad, dst_rectangle)
 
 **为什么要球员脚踝不用 bbox 中心**：bbox 中心是身体中心，离地有 1 米多高；脚踝在地面上，投影更准。`estimate_foot_point()` 优先取左右脚踝平均，置信度低时退到 bbox 底中点。
 
-### Step 3 — FX（子弹时间特效）
+### Step 3 — FX（可选的子弹时间特效）
 
-电影《黑客帝国》Neo 躲子弹那个慢镜头围绕镜头转的镜头。这里是单机位轻量版：
+该阶段默认跳过，以免长视频被冻帧/慢动作改变时间轴。显式使用 `--enable-bullet-time-fx`，或在 Web UI 打开“子弹镜头特效”按钮后，才会生成电影《黑客帝国》Neo 躲子弹那样的单机位轻量版效果：
 
 - 选定一些时间点（"子弹时刻"，可手动 / 均匀分布 / 自动峰值检测）
 - 在该时刻**冻帧** 28 帧，期间用虚拟相机做小幅度旋转 + 缩放
@@ -267,7 +343,7 @@ A：字体回退已加了 macOS PingFang.ttc。如果还报错，确认 `/System
 A：`select_court.py` 点的顺序错了，必须 TL → TR → BR → BL。可加 `--draw_court_polygon` 让 overlay 视频里画出绿色四边形检查。
 
 **Q：`ModuleNotFoundError: pycocotools / parse / lap`**
-A：原 requirements.txt 没列全，按本文档"装依赖"那条命令补上。
+A：在项目 Python 环境中重新执行 `python -m pip install -r requirements_repro.txt`；这些 TrackNet/ByteTrack 依赖已列入当前 requirements。若使用极简系统镜像，再单独确认编译工具链已安装。
 
 更多问题排查：[HANDOVER.md](HANDOVER.md) §8。
 
@@ -297,6 +373,13 @@ badminton-pipeline-repro/
 │
 ├── docs/images/                    # README 配图
 │
+├── web_app/                        # 本地 Flask Web UI 与后台任务队列
+│   ├── server.py                   # HTTP API、上传、SSE 状态和文件服务
+│   ├── pipeline_service.py         # 单 GPU 队列与 TrackNet/Overlay 调用
+│   ├── rally_cutter.py             # RallyID 解析与 ffmpeg 切片
+│   └── static/                     # Web 页面资源
+├── run_web_ui.sh                   # Web UI 启动脚本
+│
 └── scripts/
     ├── tracknet_runtime/           # Step 1: TrackNet
     │   ├── predict.py              # 入口
@@ -316,6 +399,12 @@ badminton-pipeline-repro/
         ├── diag_tracknet.py        # 诊断 TrackNet heatmap 强度
         └── render_panel_preview.py # 单独渲染面板预览
 ```
+
+### 可选：BST 逐拍击球类型识别
+
+专业分析已接入 [BST: Badminton Stroke-type Transformer](https://github.com/Va6lue/BST-Badminton-Stroke-type-Transformer) 适配层。配置上游研究仓库和 checkpoint 后，Web UI 会在独立面板显示每个击球的 Top-3 类型、置信度和姿态/球点覆盖率。Top-1 达到 60% 只是类型报告门槛之一；Motion Coach 使用 85% Top-1、25 个百分点区分度和更高覆盖率门槛，且只让与球路规则一致的 BST 成为精确类型来源。低置信或覆盖不足的 BST 仍用于诊断，但会回退到独立可靠的球路规则；明确冲突、侧别错误和高置信无法映射结果不会回退。未配置 BST 时专业任务仍正常完成。BST 只识别“是什么球”，不提供“动作好坏”评分。
+
+配置示例和类别/权重匹配要求见 [docs/bst_integration.md](docs/bst_integration.md)。
 
 ---
 
@@ -349,7 +438,7 @@ P1.3 YOLO 跳帧检测         → 1-2 小时
 P2.1 球轨迹补漏（卡尔曼）  → 3-4 小时
 P2.2 击球点 + 自动回合分割 → 4-6 小时
 P2.3 Mini Court 视觉增强   → 1-2 小时
-P3.1 Gradio Web UI         → 1-2 天
+P3.1 Flask Web UI           → 已提供本地 MVP
 P3.2 多机位适配            → 1-2 天
 P3.3 数据导出 + 热力图     → 4-6 小时
 ```

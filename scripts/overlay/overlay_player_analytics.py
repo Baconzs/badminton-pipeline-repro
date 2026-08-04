@@ -2104,7 +2104,8 @@ def write_ball_tracking_csv(
             "RawSource", "RawConfidence", "Source", "Confidence",
             "ClassicalTrackID", "DetectorMode", "Hit", "HitScore",
             "HitUncertain", "HitSource", "HitTrackID", "HitX", "HitY",
-            "HitBallObserved", "HitHitter", "RallyID", "HitRallyIndex",
+            "HitBallObserved", "HitHitter", "HitHitterConfidence",
+            "HitHitterSource", "RallyID", "HitRallyIndex",
             "HitVideoIndex", "ShotEndFrame", "ShotAvgSpeedMps",
             "ShotAvgSpeedKmh", "ShotDistanceM", "ShotObservedSeconds",
             "ShotElapsedSeconds", "ShotCoverage", "ShotSpeedQuality",
@@ -2144,6 +2145,9 @@ def write_ball_tracking_csv(
                 int(round(event.y)) if event is not None else "",
                 int(getattr(event, "ball_observed", False)) if event is not None else 0,
                 str(getattr(event, "hitter", "unknown")) if event is not None else "",
+                f"{max(0.0, min(1.0, float(getattr(event, 'hitter_confidence', 0.0)))):.4f}"
+                if event is not None else "",
+                str(getattr(event, "hitter_source", "unknown")) if event is not None else "",
                 rally_id,
                 int(getattr(event, "rally_hit_index", 0)) if event is not None else "",
                 int(getattr(event, "video_hit_index", 0)) if event is not None else "",
@@ -2193,28 +2197,39 @@ def merge_hit_events(
         return []
 
     # Associate supplemental evidence without changing frame/x/y/source.
-    # Hitter association is contextual metadata and is safe to copy when the
-    # visual detector could not determine a side itself.
-    association_limit = max(1, int(min_separation_frames))
+    # An audio impulse is useful for timing, but a loose nearest-body result
+    # must never become a visual event's hitter identity.  Only a strict
+    # virtual-racket contact association may transfer, and only when it has
+    # one unambiguous visual neighbour in a tight timing window.  This avoids
+    # copying a side from one of two adjacent false/duplicate turns.
+    association_limit = max(1, min(3, int(min_separation_frames)))
     for supplemental in supplemental_events:
+        supplemental_side = str(getattr(supplemental, "hitter", "unknown"))
+        supplemental_source = str(getattr(supplemental, "hitter_source", "")).strip().lower()
+        try:
+            supplemental_confidence = float(getattr(supplemental, "hitter_confidence", 0.0))
+        except (TypeError, ValueError):
+            supplemental_confidence = 0.0
+        if (
+            supplemental_side not in {"near", "far"}
+            or supplemental_source != "pose_contact"
+            or not math.isfinite(supplemental_confidence)
+            or supplemental_confidence < 0.63
+        ):
+            continue
         nearby = [
             event for event in candidates
-            if abs(int(event.frame) - int(supplemental.frame)) < association_limit
+            if abs(int(event.frame) - int(supplemental.frame)) <= association_limit
         ]
-        if not nearby:
+        if len(nearby) != 1:
             continue
-        visual = min(
-            nearby,
-            key=lambda event: (
-                abs(int(event.frame) - int(supplemental.frame)),
-                -float(event.score),
-            ),
-        )
+        visual = nearby[0]
         if (
             str(getattr(visual, "hitter", "unknown")) == "unknown"
-            and str(getattr(supplemental, "hitter", "unknown")) != "unknown"
         ):
-            visual.hitter = str(supplemental.hitter)
+            visual.hitter = supplemental_side
+            visual.hitter_confidence = supplemental_confidence
+            visual.hitter_source = supplemental_source
 
     source_bonus = {
         "classical_piecewise": 0.18,
@@ -2255,6 +2270,152 @@ def merge_hit_events(
             selected.append(candidate)
     selected.sort(key=lambda event: event.frame)
     return selected
+
+
+# Strict pose associations begin at 0.63.  A 0.75 anchor keeps a meaningful
+# margin above that floor while retaining the reliable 0.75--0.80 contacts
+# observed in distant broadcast views.
+_POSE_CONTACT_ANCHOR_CONFIDENCE = 0.75
+_RALLY_ALTERNATION_CONFIDENCE = 0.55
+_RALLY_ALTERNATION_SOURCE = "rally_alternation_inferred"
+
+
+def _hitter_confidence(event):
+    """Return a finite normalized hitter-attribution confidence."""
+    try:
+        confidence = float(getattr(event, "hitter_confidence", 0.0))
+    except (TypeError, ValueError):
+        return 0.0
+    return max(0.0, min(1.0, confidence)) if math.isfinite(confidence) else 0.0
+
+
+def _is_strong_pose_contact_anchor(event, minimum_confidence):
+    """Whether an event can safely anchor a local rally-side inference."""
+    return (
+        str(getattr(event, "hitter", "unknown")).strip().lower() in {"near", "far"}
+        and str(getattr(event, "hitter_source", "")).strip().lower() == "pose_contact"
+        and _hitter_confidence(event) >= float(minimum_confidence)
+    )
+
+
+def infer_single_unknown_hitter_from_rally_anchors(
+    hit_events,
+    *,
+    anchor_min_confidence=_POSE_CONTACT_ANCHOR_CONFIDENCE,
+    min_gap_frames=10,
+):
+    """Apply a deliberately narrow badminton alternation consistency check.
+
+    The near/far hit totals are *not* normalized.  An attribution is added
+    only when one unknown event is directly bracketed, in the same segmented
+    rally, by two high-confidence ``pose_contact`` events for the same side.
+    That three-hit pattern has exactly one alternating explanation.  Any
+    missed hit, duplicate turn, opposite-side anchor, rally boundary, or
+    weak/legacy side hint remains untouched for video review.
+
+    The return value is diagnostics for logs/tests; callers retain every raw
+    trajectory event and can audit an inferred label through its source.
+    """
+    try:
+        minimum_confidence = max(0.0, min(1.0, float(anchor_min_confidence)))
+    except (TypeError, ValueError):
+        minimum_confidence = _POSE_CONTACT_ANCHOR_CONFIDENCE
+    try:
+        minimum_gap = max(0, int(min_gap_frames))
+    except (TypeError, ValueError):
+        minimum_gap = 10
+
+    stats = {
+        "rallies": 0,
+        "strong_pose_anchors": 0,
+        "single_unknown_gaps": 0,
+        "filled": 0,
+        "skipped_opposite_anchors": 0,
+        "skipped_close_events": 0,
+        "skipped_collision_sources": 0,
+        "near": 0,
+        "far": 0,
+        "unknown": 0,
+        "rallies_over_balance_tolerance": 0,
+    }
+    grouped = {}
+    for original_index, event in enumerate(hit_events or ()):
+        try:
+            rally_id = int(getattr(event, "rally", 0))
+            frame = int(getattr(event, "frame", -1))
+        except (TypeError, ValueError):
+            continue
+        if rally_id <= 0 or frame < 0:
+            continue
+        grouped.setdefault(rally_id, []).append((frame, original_index, event))
+
+    stats["rallies"] = len(grouped)
+    for grouped_events in grouped.values():
+        grouped_events.sort(key=lambda item: (item[0], item[1]))
+        events = [item[2] for item in grouped_events]
+        stats["strong_pose_anchors"] += sum(
+            _is_strong_pose_contact_anchor(event, minimum_confidence)
+            for event in events
+        )
+        for previous, center, following in zip(events, events[1:], events[2:]):
+            if str(getattr(center, "hitter", "unknown")).strip().lower() != "unknown":
+                continue
+            if not (
+                _is_strong_pose_contact_anchor(previous, minimum_confidence)
+                and _is_strong_pose_contact_anchor(following, minimum_confidence)
+            ):
+                continue
+            stats["single_unknown_gaps"] += 1
+            if any(
+                str(getattr(event, "source", "")).strip().lower()
+                in {"edge_exit", "classical_endpoint"}
+                for event in (previous, center, following)
+            ):
+                # These endpoint-style candidates can be valid contacts, but
+                # their timing is intentionally less stable than an ordinary
+                # bidirectional turn.  Do not use them to establish parity.
+                stats["skipped_collision_sources"] += 1
+                continue
+            try:
+                left_gap = int(getattr(center, "frame")) - int(getattr(previous, "frame"))
+                right_gap = int(getattr(following, "frame")) - int(getattr(center, "frame"))
+            except (TypeError, ValueError):
+                continue
+            # A tiny separation usually means duplicate/ambiguous turn
+            # candidates, rather than three physical badminton contacts.
+            if left_gap <= minimum_gap or right_gap <= minimum_gap:
+                stats["skipped_close_events"] += 1
+                continue
+            left_side = str(getattr(previous, "hitter", "unknown")).strip().lower()
+            right_side = str(getattr(following, "hitter", "unknown")).strip().lower()
+            if left_side != right_side:
+                # With a single event in between, opposite anchors do not
+                # yield a unique alternation explanation.
+                stats["skipped_opposite_anchors"] += 1
+                continue
+            center.hitter = "far" if left_side == "near" else "near"
+            center.hitter_confidence = _RALLY_ALTERNATION_CONFIDENCE
+            center.hitter_source = _RALLY_ALTERNATION_SOURCE
+            stats["filled"] += 1
+
+        near_count = sum(
+            str(getattr(event, "hitter", "unknown")).strip().lower() == "near"
+            for event in events
+        )
+        far_count = sum(
+            str(getattr(event, "hitter", "unknown")).strip().lower() == "far"
+            for event in events
+        )
+        if abs(near_count - far_count) > 1:
+            stats["rallies_over_balance_tolerance"] += 1
+
+    for event in hit_events or ():
+        side = str(getattr(event, "hitter", "unknown")).strip().lower()
+        if side in {"near", "far"}:
+            stats[side] += 1
+        else:
+            stats["unknown"] += 1
+    return stats
 
 
 def merge_visual_hit_candidates(
@@ -2591,6 +2752,127 @@ def _distance_to_box(point, box):
     return math.hypot(dx, dy)
 
 
+def _strict_hitter_from_pose_evidence(ball_xy, pose_evidence):
+    """Associate a measured contact only with a clearly closest racket tip.
+
+    A shuttle high above the court can be visually closer to the opposite
+    player's body box than to the actual striker.  Body-box distance therefore
+    remains a false-positive veto only; attribution requires the virtual tip
+    of a visible arm and a meaningful two-side margin.
+    """
+    if pose_evidence is None or ball_xy is None:
+        return None
+    try:
+        ball_x, ball_y = map(float, ball_xy)
+    except (TypeError, ValueError):
+        return None
+    # Pose tracking can emit two overlapping person boxes for the same court
+    # side.  They are not competing hitters: retain that side's closest
+    # virtual racket tip before comparing near versus far.
+    closest_by_side = {}
+    for player in pose_evidence.get("players", []):
+        side = str(player.get("side", ""))
+        contact = player.get("contact")
+        torso = player.get("torso")
+        if side not in {"near", "far"} or contact is None:
+            continue
+        try:
+            torso_value = float(torso)
+            contact_x, contact_y = map(float, contact)
+        except (TypeError, ValueError):
+            continue
+        if not math.isfinite(torso_value) or torso_value < 4.0:
+            continue
+        distance = math.hypot(contact_x - ball_x, contact_y - ball_y) / torso_value
+        if not math.isfinite(distance):
+            continue
+        previous = closest_by_side.get(side)
+        if previous is None or distance < previous:
+            closest_by_side[side] = distance
+    candidates = [
+        (distance, side)
+        for side, distance in closest_by_side.items()
+    ]
+    if not candidates:
+        return None
+    candidates.sort()
+    best_distance, best_side = candidates[0]
+    second_distance = candidates[1][0] if len(candidates) > 1 else None
+    maximum_distance = 0.75 if second_distance is None else 1.05
+    if best_distance > maximum_distance:
+        return None
+    if second_distance is not None and second_distance - best_distance < 0.35:
+        return None
+    closeness = max(0.0, min(1.0, 1.0 - best_distance / maximum_distance))
+    separation = (
+        1.0 if second_distance is None
+        else max(0.0, min(1.0, (second_distance - best_distance - 0.35) / 0.75))
+    )
+    confidence = min(0.94, 0.63 + 0.19 * closeness + 0.12 * separation)
+    return best_side, float(confidence)
+
+
+def apply_strict_pose_hitter_associations(hit_events, pose_evidence):
+    """Attach direct hitter evidence to final visual/audio hit candidates.
+
+    ``build_audio_hit_events`` may localize a subset of audio-supported
+    contacts early, but the post-filter candidate list also contains ordinary
+    curvature/endpoint hits.  Run the same strict virtual-racket association
+    over *all* of those candidates before evidence validation and temporal
+    merge, so a valid visual contact is not left unknown merely because audio
+    localization did not create a separate event.
+
+    Existing stronger ``pose_contact`` metadata is retained when the repeated
+    frame-local association is weaker.  No box-distance or alternating-side
+    hint can enter here: failures remain explicitly unknown.
+    """
+    stats = {
+        "candidates": 0,
+        "associated": 0,
+        "updated": 0,
+        "preserved_stronger": 0,
+    }
+    evidence_by_frame = pose_evidence or {}
+    for event in hit_events or ():
+        stats["candidates"] += 1
+        try:
+            frame = int(getattr(event, "frame"))
+            ball_xy = (float(getattr(event, "x")), float(getattr(event, "y")))
+        except (TypeError, ValueError, AttributeError):
+            continue
+        association = _strict_hitter_from_pose_evidence(
+            ball_xy,
+            evidence_by_frame.get(frame),
+        )
+        if association is None:
+            continue
+        side, confidence = association
+        stats["associated"] += 1
+        previous_side = str(getattr(event, "hitter", "unknown")).strip().lower()
+        previous_source = str(getattr(event, "hitter_source", "")).strip().lower()
+        previous_confidence = _hitter_confidence(event)
+        # A second pass at the same frame can be slightly weaker because an
+        # audio event uses an interpolated shuttle coordinate.  Do not reduce
+        # a pre-existing direct pose association merely to make fields match.
+        if (
+            previous_source == "pose_contact"
+            and previous_side in {"near", "far"}
+            and previous_confidence > float(confidence)
+        ):
+            stats["preserved_stronger"] += 1
+            continue
+        if (
+            previous_side != side
+            or previous_source != "pose_contact"
+            or abs(previous_confidence - float(confidence)) > 1e-9
+        ):
+            stats["updated"] += 1
+        event.hitter = side
+        event.hitter_confidence = float(confidence)
+        event.hitter_source = "pose_contact"
+    return stats
+
+
 def _infer_audio_pose_contacts(
     model,
     video_path,
@@ -2702,6 +2984,7 @@ def _infer_audio_pose_contacts(
                     "side": side,
                     "wrists": [],
                     "contact": None,
+                    "torso": None,
                 }
                 best_arm = None
                 if keypoints is not None and person_index < len(keypoints):
@@ -2712,6 +2995,23 @@ def _infer_audio_pose_contacts(
                         and person_index < len(keypoint_confidence) else
                         np.ones(len(person_points), dtype=np.float32)
                     )
+                    torso_points = []
+                    for point_index in (5, 6, 11, 12):
+                        if (
+                            point_index < len(person_points)
+                            and point_index < len(person_confidence)
+                            and float(person_confidence[point_index]) >= 0.18
+                        ):
+                            torso_points.append(person_points[point_index].astype(np.float64))
+                        else:
+                            torso_points = []
+                            break
+                    if len(torso_points) == 4:
+                        shoulder_center = 0.5 * (torso_points[0] + torso_points[1])
+                        hip_center = 0.5 * (torso_points[2] + torso_points[3])
+                        torso_length = float(np.linalg.norm(shoulder_center - hip_center))
+                        if torso_length >= 4.0:
+                            player["torso"] = torso_length
                     for shoulder_index, elbow_index, wrist_index in ((5, 7, 9), (6, 8, 10)):
                         if (
                             wrist_index >= len(person_points)
@@ -2805,12 +3105,12 @@ def build_audio_hit_events(
     """
 
     if not args.audio_hit_detection:
-        return [], []
+        return [], [], False
     try:
         from audio_hit_detector import detect_audio_hit_candidates
     except Exception as exc:
         print(f"[WARN] audio-hit detector unavailable: {exc}")
-        return [], []
+        return [], [], False
 
     real_frames = [
         int(point.frame) for point in ball_track
@@ -2827,17 +3127,21 @@ def build_audio_hit_events(
     if scene_cuts:
         stop_frame = min(stop_frame, min(int(frame) for frame in scene_cuts))
     try:
-        candidates = detect_audio_hit_candidates(
+        candidates, audio_available = detect_audio_hit_candidates(
             video_path,
             fps,
             start_frame=start_frame,
             stop_frame=stop_frame,
             score_threshold=args.audio_hit_score_threshold,
             nms_frames=args.audio_hit_nms_frames,
+            return_audio_available=True,
         )
     except Exception as exc:
         print(f"[WARN] audio-hit detection failed: {exc}")
-        return [], []
+        return [], [], False
+
+    if not audio_available:
+        print("[INFO] source has no decodable audio; using visual hit evidence only")
 
     support = set(int(frame) for frame in visual_support_frames)
     selected = []
@@ -2871,22 +3175,12 @@ def build_audio_hit_events(
             continue
         pose = pose_evidence.get(int(candidate.frame))
         hitter = "unknown"
-        if pose is not None:
-            ball_xy = ball_estimate[0]
-            nearest_player = None
-            for player in pose.get("players", []):
-                wrist_distance = min(
-                    (euclidean(ball_xy, wrist) for wrist in player.get("wrists", [])),
-                    default=math.inf,
-                )
-                metric = min(
-                    wrist_distance,
-                    _distance_to_box(ball_xy, player["box"]) + 80.0,
-                )
-                if nearest_player is None or metric < nearest_player[0]:
-                    nearest_player = (metric, player.get("side", "unknown"))
-            if nearest_player is not None and nearest_player[0] <= 260.0:
-                hitter = nearest_player[1]
+        hitter_confidence = 0.0
+        hitter_source = "unknown"
+        association = _strict_hitter_from_pose_evidence(ball_estimate[0], pose)
+        if association is not None:
+            hitter, hitter_confidence = association
+            hitter_source = "pose_contact"
 
         position, observed, source_frame = ball_estimate
         source = "audio_ball"
@@ -2908,8 +3202,10 @@ def build_audio_hit_events(
             source=source,
             track_id=track_id,
             ball_observed=bool(observed),
+            hitter_confidence=float(hitter_confidence),
+            hitter_source=hitter_source,
         ))
-    return events, candidates
+    return events, candidates, bool(audio_available)
 
 
 def detect_scene_cuts(video_path, threshold=28.0, min_separation=8, return_frame_count=False):
@@ -4889,7 +5185,7 @@ def run(args):
         )
         visual_support_frames.update(event.frame for event in hit_events)
 
-    audio_hit_events, raw_audio_candidates = build_audio_hit_events(
+    audio_hit_events, raw_audio_candidates, audio_available = build_audio_hit_events(
         args.video_path,
         fps,
         ball_track,
@@ -4926,6 +5222,14 @@ def run(args):
         midline_y_img,
         args,
     ) if model is not None and hit_candidates else {}
+    # Do not limit strict hitter attribution to the audio-localized subset.
+    # At this point every final visual candidate has a frame-local pose sample
+    # and a measured ball coordinate, so the association can be applied
+    # consistently before validation/NMS chooses the rendered event.
+    hit_pose_association_stats = apply_strict_pose_hitter_associations(
+        hit_candidates,
+        hit_pose_evidence,
+    )
     hit_player_boxes = {
         int(frame): [
             player["box"] for player in evidence.get("players", [])
@@ -4947,7 +5251,11 @@ def run(args):
         hit_candidates,
         audio_frames=[candidate.frame for candidate in raw_audio_candidates],
         player_boxes=hit_player_boxes,
-        require_audio=bool(args.audio_hit_detection),
+        # Audio is an additional gate only when the source actually contains
+        # a decodable audio track.  Requiring a nonexistent stream otherwise
+        # rejects every valid trajectory event (for example silent coaching
+        # clips) and turns an informative visual result into zero hits.
+        require_audio=bool(args.audio_hit_detection and audio_available),
         audio_tolerance_frames=args.audio_hit_visual_tolerance,
         evidence_window_frames=min(18, max(6, args.audio_hit_ball_search_frames)),
         min_real_points=2,
@@ -5184,6 +5492,7 @@ def run(args):
         print(
             f"[INFO] audio_hit_candidates={len(raw_audio_candidates)}, "
             f"localized={len(audio_hit_events)}, "
+            f"available={bool(audio_available)}, "
             f"strong_score={args.audio_hit_strong_score:.2f}"
         )
     if args.offscreen_bridge:
@@ -5192,6 +5501,13 @@ def run(args):
         "[INFO] hit_evidence="
         + ",".join(
             f"{key}:{value}" for key, value in sorted(hit_evidence_stats.items())
+        )
+    )
+    print(
+        "[INFO] hit_hitter_pose="
+        + ",".join(
+            f"{key}:{value}"
+            for key, value in sorted(hit_pose_association_stats.items())
         )
     )
     print(f"[INFO] ball_csv={ball_csv or '<none>'}, "
@@ -5816,6 +6132,13 @@ def run(args):
             event for event in hit_events
             if int(event.frame) not in body_vetoed_hit_frames
         ]
+    # The renderer does not consume hitter identity, so apply the optional
+    # rally-consistency check only after the final render-pass veto.  This
+    # keeps the exported sidecar auditable: every inferred side is bracketed
+    # by events that actually survive into the output.
+    hitter_attribution_stats = infer_single_unknown_hitter_from_rally_anchors(
+        hit_events,
+    )
     write_ball_tracking_csv(
         tracking_csv,
         ball_dict,
@@ -5828,6 +6151,13 @@ def run(args):
     if frame_idx > 0:
         detect_ratio = detect_calls / float(frame_idx)
         print(f"[DONE] detect_calls={detect_calls}, detect_ratio={detect_ratio:.3f}")
+    print(
+        "[INFO] hitter_attribution="
+        + ",".join(
+            f"{key}:{value}"
+            for key, value in sorted(hitter_attribution_stats.items())
+        )
+    )
     print("[DONE] finished")
     print(f"[DONE] output video: {args.output_path}")
 
